@@ -1,0 +1,57 @@
+#+title:     Philosophers
+#+author:    Chris Haikney
+#+email:     chaikney@student.42urduliz.com
+* Early notes
+** Task set up
+Philosophers are threads?
+Any number of philosophers in one (only) of 3 states.
+Same number of forks (resource).
+Philosophers need 2 forks to eat.
+No communication between philosophers (threads?)
+The time in the three states is taken as an argument.
+Philosophers are numbered and also have a sitting position (not sure why that matters, maybe because the forks stay in the same place).
+How would you model the forks? They don't do anything, really. They have a position and are either in use or not in use. If in use, do we record (there) with philosoper is using the fork? Just that it is in use (reserved, has a mutex on it?)
+MutEx = Mutual Exclusion.
+Have to keep logs: Timestamps, philosopher numbers and one of five actions.
+Seems like if there is only one philosopher there is only one fork, and she will die.
+The location of the forks, does that matter or am I taking the metaphor too far? The forks don't *move*, so for example, 2 philos could eat alternately. Eat, release your forks. The other picks up and eats
+There must be some key time after you have picked up a fork: time eating + plus time sleeping + time to die amounts to the time that can be spent thinking before it wants to eat (?). -- what are the warning states or times here?
+*** Functions in play
+*No* libft.
+Lots of pthread things
+"protect the forks with a mutex"??
+Time-related functions (gettimeofday)
+**** gettimeofday
+#+begin_src c
+#include <sys/time.h>
+struct timeval {
+	time_t 		tv_sec;
+	suseconds_t	tv_usec
+};
+    int gettimeofday(struct timeval *tv, struct timezone *tz)
+#+end_src
+the timeval struct gives the number of seconds and microseconds since the Epoch (i.e. it just keeps going up after the start)
+The timezone "is obsolete" and should normally be specified as NULL
+To get milliseconds from  the timeval, I need a function. What should it return? (seconds * 1000) + (suseconds / 1000) ?
+**** usleep
+#+begin_src c
+#include <unistd.h>
+int usleep(useconds_t n);
+#+end_src
+Suspend execution of the calling thread for at least n microseconds. *Why* and what is this analogous to? Can I call usleep to keep my philosophers sleeping?
+They have their mutex on 2 forks for time_to_eat, they release the mutex and then usleep for time_sleeping?
+Then if we have a philo awake, they are looking to take a fork so they can eat (no limit on their gluttony).
+This is MT-Safe, meaning it can be  called in the presence of other threads.
+*** Crude idea of tasks
+- parse the arguments
+- some kind of exit when a philosopher dies
+- print some log statements - whenever a state changes? When there is a synchronisation (needed to avoid data races, apparently.)
+- a framework whereby the philosophers change?
+- a means for the philos to change their state -- how do you *record* the state that they are in?
+  time that they have been in X state?
+  time before they would die?
+- track the time
+  With no global variable allowed, we use gettimeofday
+*** NEXT read up on phthreads
+varaibles, structs. What do they hold?
+Also refer back to this? https://www.cs.cmu.edu/afs/cs/academic/class/15492-f07/www/pthreads.html
