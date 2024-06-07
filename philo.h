@@ -1,3 +1,5 @@
+// TODO Add 42 header
+
 #ifndef PHILO_H
 # define PHILO_H
 # include <stdio.h>	// printf
