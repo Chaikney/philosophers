@@ -1,4 +1,6 @@
 #include "philo.h"
+#include <sys/time.h>
+#include <time.h>
 
 // TODO Add 42 header.
 
@@ -27,6 +29,31 @@ int	ph_atoi(char *str)
     return (n);
 }
 
+// Log state changes of a philosopher.
+// TODO The timestamp should  not be "now" but "milliseconds since start"
+void	report_state(int phil, int state)
+{
+    struct timeval now;
+    int			milli;
+
+    if ((state > 0) && (state < 6))
+    {
+        gettimeofday(&now, NULL);
+        milli = timeval_to_ms(now);
+        printf("%i %i ", milli, phil);
+        if (state == 1)
+            printf("has taken a fork\n");
+        if (state == 2)
+            printf("is eating\n");
+        if (state == 3)
+            printf("is sleeping\n");
+        if (state == 4)
+            printf("is thinking\n");
+        if (state == 5)
+            printf("died\n");
+    }
+}
+
 // Convert a timeval struct into an int representing a number of
 // milliseconds
 int	timeval_to_ms(struct timeval t)
@@ -50,7 +77,7 @@ struct timeval	ms_to_timeval(int t)
     return (ret_time);
 }
 
-// TODO Convert time parameters to an appropriate format (struct?)
+// DONE Convert time parameters to an appropriate format (struct?)
 int	main(int argc, char **argv)
 {
     int			num_philos;
@@ -72,6 +99,9 @@ int	main(int argc, char **argv)
         printf("philos: %i\ndie after: %i\neat for: %i\nsleep for: %i\neat until: %i",
                num_philos, timeval_to_ms(die_time), timeval_to_ms(eat_time),
                timeval_to_ms(sleep_time), meals);
+        // HACK testing the log function, delete later.
+        report_state(1, 3);
+        report_state(6, 5);
     }
     return (0);
 }
