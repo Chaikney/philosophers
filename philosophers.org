@@ -10,7 +10,7 @@ Philosophers need 2 forks to eat.
 No communication between philosophers (threads?)
 The time in the three states is taken as an argument.
 Philosophers are numbered and also have a sitting position (not sure why that matters, maybe because the forks stay in the same place).
-How would you model the forks? They don't do anything, really. They have a position and are either in use or not in use. If in use, do we record (there) with philosoper is using the fork? Just that it is in use (reserved, has a mutex on it?)
+How would you model the forks? They don't do anything, really. They have a position and are either in use or not in use. If in use, do we record (there) with philosopher is using the fork? Just that it is in use (reserved, has a mutex on it?)
 MutEx = Mutual Exclusion.
 Have to keep logs: Timestamps, philosopher numbers and one of five actions.
 Seems like if there is only one philosopher there is only one fork, and she will die.
@@ -53,5 +53,5 @@ This is MT-Safe, meaning it can be  called in the presence of other threads.
 - track the time
   With no global variable allowed, we use gettimeofday
 *** NEXT read up on phthreads
-varaibles, structs. What do they hold?
+variables, structs. What do they hold?
 Also refer back to this? https://www.cs.cmu.edu/afs/cs/academic/class/15492-f07/www/pthreads.html
