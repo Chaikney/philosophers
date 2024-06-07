@@ -4,6 +4,7 @@
 # define PHILO_H
 # include <stdio.h>	// printf
 # include <sys/time.h>	// timeval struct, getttimeofday
+# include <pthread.h>	// phtreads
 
 // helper functions
 int	ph_atoi(char *str);

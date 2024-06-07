@@ -1,4 +1,5 @@
 #include "philo.h"
+#include <pthread.h>
 
 // TODO Add 42 header.
 
@@ -75,6 +76,11 @@ struct timeval	ms_to_timeval(int t)
 	return (ret_time);
 }
 
+void	launch_phil(void)
+{
+    printf("i ama philsopher thread");
+}
+
 // DONE Convert time parameters to an appropriate format (struct?)
 int	main(int argc, char **argv)
 {
@@ -83,6 +89,9 @@ int	main(int argc, char **argv)
 	struct timeval	eat_time;
 	struct timeval	sleep_time;
 	int			meals;
+    pthread_t	phil1;
+    pthread_t	phil2;
+
 
 	if ((argc == 5) || (argc == 6))
 	{
@@ -100,6 +109,8 @@ int	main(int argc, char **argv)
 		// HACK testing the log function, delete later.
 		report_state(1, 3);
 		report_state(6, 5);
+        pthread_create(&phil1, NULL, (void *) &launch_phil, NULL);
+        pthread_create(&phil2, NULL, (void *) &launch_phil, NULL);
 	}
 	return (0);
 }

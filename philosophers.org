@@ -55,3 +55,5 @@ This is MT-Safe, meaning it can be  called in the presence of other threads.
 *** NEXT read up on phthreads
 variables, structs. What do they hold?
 Also refer back to this? https://www.cs.cmu.edu/afs/cs/academic/class/15492-f07/www/pthreads.html
+** [2024-06-07 vie] Mutex functionns are hard to find, at least the man pages are.
+
