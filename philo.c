@@ -76,9 +76,13 @@ struct timeval	ms_to_timeval(int t)
 	return (ret_time);
 }
 
-void	launch_phil(void)
+void	launch_phil(void *ptr)
 {
+	char	*msg;
+
+	msg = (char *)ptr;
     printf("i ama philsopher thread");
+	printf("%s", msg);
 }
 
 // DONE Convert time parameters to an appropriate format (struct?)
@@ -91,6 +95,7 @@ int	main(int argc, char **argv)
 	int			meals;
     pthread_t	phil1;
     pthread_t	phil2;
+	char	*msg = "what then";
 
 
 	if ((argc == 5) || (argc == 6))
@@ -109,8 +114,12 @@ int	main(int argc, char **argv)
 		// HACK testing the log function, delete later.
 		report_state(1, 3);
 		report_state(6, 5);
-        pthread_create(&phil1, NULL, (void *) &launch_phil, NULL);
-        pthread_create(&phil2, NULL, (void *) &launch_phil, NULL);
+        pthread_create(&phil1, NULL, (void *) &launch_phil, msg);
+        pthread_create(&phil2, NULL, (void *) &launch_phil, "another message");
+		// NOTE the join call waits for all the threads to arrive. Without this the program
+		// gets to the end before thread 2 finishes.
+		pthread_join(phil1, NULL);
+		pthread_join(phil2, NULL);
 	}
 	return (0);
 }
