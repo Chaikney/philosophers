@@ -8,6 +8,7 @@
 # include <sys/types.h>
 # include <pthread.h>	// phtreads
 # include <stdlib.h>	//malloc
+# include <unistd.h>	// usleep
 
 // The shared conditions that they are dining at,
 // i.e. the table rule.

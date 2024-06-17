@@ -80,6 +80,10 @@ They eat, or sleep, or think - do I need to store that state?
 ** fork = mutex
 In the simple sense, an array of mutexes; but how to number them?
 If between the philosophers, the philos want their number fork *and* +1 (max number philo takes 0 instead of that).
+I have given each philosopher a (space to hold a) mutex on each side. To "pick up" a fork they must...
+#+begin_src c
+pthread_mutex_lock(philo->l_fork);
+#+end_src
 ** Setting up variables.
 number of forks = number of philosophers.
 Number of philosophers = number of threads to create
@@ -90,19 +94,21 @@ Meals -- when a philo reaches this number, they no longer try to eat(?) or they 
 Doing my head in.
 Any struct or typedef needs allocated, is that true?
 Initialization is needed for the values of the philosophers, I guess. Where they are sat. Not their thread ID, because that is a pointer which gets filled in on pthread_create invocation. Right?
+*** TODO Summarise what I actually *learned* about what to init
 ** When do the threads join / synchronise?
 Can we have the join within the thread function? Must be possible.
-** What goes in our function, and where?
+Does the philosopher either side (i.e. waiting for a fork) have to join with them? Or does that make for explosions / clashes.
+** What goes in our thread function, and where?
 Imagine from the POV of the philo.
 First off, tries to eat (possible to have a range of different starting strategies)
 Takes two forks. Eat for X, releases forks, sleeps for Y.
+? - Do we take the eating time as sleep as well? There's no reason it should  keep taking up processor time (unless to log something?)
 If can't take two forks, release the other? Or wait and try again?
 * Submission requirements
 ** [#A] Match all requirements in project sheet
 ** HOLD presubmission checklist
-- [ ] remove stdio.h from my files
 - [ ] remove spare (ft_)printfs
-- [ ] norminette all my files (inc libft)
+- [ ] norminette all my files
 - [ ] compile from fresh checkout
 - [ ] run from fresh checkout
 - [ ] Files are to be in a dir philo/ or similar.
