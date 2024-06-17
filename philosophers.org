@@ -85,7 +85,11 @@ number of forks = number of philosophers.
 Number of philosophers = number of threads to create
 Both of these would be arrays of ahead-unknown size: i.e. pointers
 Meals -- when a philo reaches this number, they no longer try to eat(?) or they don't have(?) or carry on. When *all* philos reach that, we end the sim.
-2nd arg of pthread_create is attributes - could use this to store philosopher number (or a general state-of-philosopher struct)
+2nd arg of pthread_create is attributes - could use this to store philosopher number (or a general state-of-philosopher struct). NO, attributes are things like does it start detached.
+** allocation and initialisation
+Doing my head in.
+Any struct or typedef needs allocated, is that true?
+Initialization is needed for the values of the philosophers, I guess. Where they are sat. Not their thread ID, because that is a pointer which gets filled in on pthread_create invocation. Right?
 ** When do the threads join / synchronise?
 Can we have the join within the thread function? Must be possible.
 ** What goes in our function, and where?
