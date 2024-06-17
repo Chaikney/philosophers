@@ -121,20 +121,21 @@ void	get_general_data(t_table *dat, int argc, char **argv)
 //. Allocate mempory for the philosopher things.
 //Really hard not to call this "set table" I should get a prize
 // allocate what is needed for one philo struct
-// FIXME This is *nonsense*
 // TODO Special case set up for first and last philosopher's forks
-void	setup_philos(t_plato **phil, int n, pthread_mutex_t **fork)
+// TODO What do I do with a place to put thread ID?
+// FIXME Basically ever assignment here is an invalid write
+void	setup_philos(t_plato *phil,  pthread_mutex_t **fork, t_table *rules)
 {
 	int	i;
 
 	i = 0;
-//	phil->id = malloc(sizeof(pthread_t *));	// FIXME is this needed? It does not work.
 
-	while (i < n)
+	while (i < rules->table_size)
 	{
-		phil[i]->seat = n;
-		phil[i]->l_fork = fork[n];
-		phil[i]->r_fork = fork[n + 1];
+		phil[i].data = rules;
+		phil[i].seat = i;
+		phil[i].l_fork = fork[i];
+		phil[i].r_fork = fork[i + 1];
 		i++;
 	}
 }
@@ -170,7 +171,8 @@ int	main(int argc, char **argv)
 	philo = NULL;
 	forks = malloc(sizeof(pthread_mutex_t) * house_rules->table_size);
 	forks_laid(forks, house_rules->table_size);
-	setup_philos(&philo, house_rules->table_size, &forks);// FIXME Now thois one has the invalid write
+	philo = malloc(sizeof(t_plato) * house_rules->table_size);
+	setup_philos(philo, &forks, house_rules);// FIXME Now thois one has the invalid write
 	/* phil = 0; */
 	/* phil[i] = 0; */
 	/* while (i <= num_philos) */
