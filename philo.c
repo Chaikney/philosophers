@@ -1,4 +1,5 @@
 #include "philo.h"
+#include <pthread.h>
 
 // TODO Add 42 header.
 
@@ -160,7 +161,6 @@ void	forks_laid(pthread_mutex_t *forks, int n)
 // TODO Allocate space for data for characteristics
 int	main(int argc, char **argv)
 {
-//	int	i;
 	t_plato		*philo;
 	t_table	*house_rules;
 	pthread_mutex_t	*forks;
@@ -172,7 +172,10 @@ int	main(int argc, char **argv)
 	forks = malloc(sizeof(pthread_mutex_t) * house_rules->table_size);
 	forks_laid(forks, house_rules->table_size);
 	philo = malloc(sizeof(t_plato) * house_rules->table_size);
-	setup_philos(philo, &forks, house_rules);// FIXME Now thois one has the invalid write
+	setup_philos(philo, &forks, house_rules);
+	printf("create one thread");
+	pthread_create(&philo[0].id, NULL, (void *) &launch_phil, NULL);
+	printf("\tdone!");
 	/* phil = 0; */
 	/* phil[i] = 0; */
 	/* while (i <= num_philos) */
@@ -186,7 +189,10 @@ int	main(int argc, char **argv)
 	/* 	// NOTE the join call waits for all the threads to arrive. Without this the program */
 		// gets to the end before thread 2 finishes.
 		// NOTE I don't know if this form would work.
-//		pthread_join(*phil, NULL);
-		printf("änd now i finish");
+	pthread_join(philo[0].id, NULL);
+	free(forks);
+	free(house_rules);
+	free(philo);
+	printf("änd now i finish");
 	return (0);
 }
