@@ -141,15 +141,17 @@ void	setup_philos(t_plato **phil, int n, pthread_mutex_t **fork)
 
 // Allocate an array of mutexes. Initialise them, too?
 // Seems a bit much when I have NO IDEA what I am doing with the threads, even.
-void	forks_laid(pthread_mutex_t **forks, int n)
+void	forks_laid(pthread_mutex_t *forks, int n)
 {
 	int	i;
 
 	i = 0;
-	forks = malloc(sizeof(pthread_mutex_t) * n);
-	(void) i;
 	while (i < n)
-		pthread_mutex_init(forks[i++], NULL);
+	{
+		printf("placing fork %i", i);
+		pthread_mutex_init(&forks[i], NULL);
+		i++;
+	}
 }
 
 // DONE Convert time parameters to an appropriate format (struct?)
@@ -160,15 +162,15 @@ int	main(int argc, char **argv)
 //	int	i;
 	t_plato		*philo;
 	t_table	*house_rules;
-	pthread_mutex_t	**forks;
+	pthread_mutex_t	*forks;
 
 	house_rules = malloc(sizeof(t_table));
 	get_general_data(house_rules, argc, argv);
 	print_menu(*house_rules);
 	philo = NULL;
-	forks = NULL;
+	forks = malloc(sizeof(pthread_mutex_t) * house_rules->table_size);
 	forks_laid(forks, house_rules->table_size);
-	setup_philos(&philo, house_rules->table_size, forks);
+	setup_philos(&philo, house_rules->table_size, &forks);// FIXME Now thois one has the invalid write
 	/* phil = 0; */
 	/* phil[i] = 0; */
 	/* while (i <= num_philos) */
