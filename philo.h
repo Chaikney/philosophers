@@ -5,6 +5,7 @@
 # include <stdio.h>	// printf
 # include <sys/time.h>	// timeval struct, getttimeofday
 # include <pthread.h>	// phtreads
+# include <stdlib.h>	//malloc
 
 // Platonic ideal of philospher
 // Each thread can keep track of their state and needs here.

@@ -86,46 +86,50 @@ void	print_thesis(t_plato p)
 
 void	launch_phil(void *ptr)
 {
-	t_plato	p;
+	//t_plato	p;
 
-	p = (*((t_plato *) ptr));	// NOTE all these brackets, Cast to t_plato first, then deref.
-	print_thesis(p);
+	(void) ptr;
+	printf("in the launch thread what will happen");
+//	p = (*((t_plato *) ptr));	// NOTE all these brackets, Cast to t_plato first, then deref.
+//	print_thesis(p);
 }
 
 // DONE Convert time parameters to an appropriate format (struct?)
+// FIXME Segfault hit by pthread_create - incvalid write, what is not set up??
 int	main(int argc, char **argv)
 {
 	int			num_philos;
 	int	i;
     pthread_t	*phil;
-	t_plato		philcharacter;
+	t_plato		*philcharacter;
 
 	if ((argc == 5) || (argc == 6))
 	{
 		num_philos = ph_atoi(argv[1]);
-		philcharacter.die_time = ms_to_timeval(ph_atoi(argv[2]));
-		philcharacter.eat_time = ms_to_timeval(ph_atoi(argv[3]));
-		philcharacter.nap_time = ms_to_timeval(ph_atoi(argv[4]));
+		philcharacter = malloc(sizeof(t_plato));
+		philcharacter->die_time = ms_to_timeval(ph_atoi(argv[2]));
+		philcharacter->eat_time = ms_to_timeval(ph_atoi(argv[3]));
+		philcharacter->nap_time = ms_to_timeval(ph_atoi(argv[4]));
 		if (argc == 6)
-			philcharacter.appetite = ph_atoi(argv[5]);
+			philcharacter->appetite = ph_atoi(argv[5]);
 		else
-			philcharacter.appetite = -1;
-		philcharacter.table_size = num_philos;
+			philcharacter->appetite = -1;
+		philcharacter->table_size = num_philos;
 		i = 1;
-		phil = NULL;
+		phil = malloc(sizeof(pthread_t) * num_philos);
 		while (i <= num_philos)
 		{
 			// TODO Confirm that this format creates treads with mstly-identical data and unique seat
-			philcharacter.seat = i;
-			if (pthread_create(phil, NULL, (void *) &launch_phil, &philcharacter) != 0)
-				printf("Failed to create thread!");
+			philcharacter->seat = i;
+			// FIXED This segfaults, invalid write: not allocated space for phil[i] ?
+			(pthread_create(&phil[i], NULL, (void *) &launch_phil, (void *) &philcharacter) );
 			i++;
 		}
-
 		// NOTE the join call waits for all the threads to arrive. Without this the program
 		// gets to the end before thread 2 finishes.
 		// NOTE I don't know if this form would work.
 		pthread_join(*phil, NULL);
+		printf("änd now i finish");
 	}
 	return (0);
 }
