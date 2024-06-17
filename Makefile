@@ -17,7 +17,7 @@ SRC		= philo.c
 OBJ		= $(SRC:.c=.o)
 
 # TODO Understand what -Fthread-sanitize does
-CFLAGS = -Werror -Wall -Wextra -pthread -Fthread-sanitize
+CFLAGS = -Werror -Wall -Wextra -pthread -Fthread-sanitize -ggdb
 CC		= cc
 
 all: $(NAME)
