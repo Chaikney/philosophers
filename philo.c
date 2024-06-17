@@ -98,6 +98,8 @@ void	launch_phil(void *ptr)
 //	print_thesis(p);
 }
 
+// FIXED Segfualt due to invalid write (nap_time, but maybe more gen problem as the thing moves)
+// NOTE Fix was to allocate sizeof(t_table) before arriving here
 void	get_general_data(t_table *dat, int argc, char **argv)
 {
 
@@ -160,7 +162,7 @@ int	main(int argc, char **argv)
 	t_table	*house_rules;
 	pthread_mutex_t	**forks;
 
-	house_rules = NULL;
+	house_rules = malloc(sizeof(t_table));
 	get_general_data(house_rules, argc, argv);
 	print_menu(*house_rules);
 	philo = NULL;
