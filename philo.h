@@ -6,6 +6,18 @@
 # include <sys/time.h>	// timeval struct, getttimeofday
 # include <pthread.h>	// phtreads
 
+// Platonic ideal of philospher
+// Each thread can keep track of their state and needs here.
+typedef	struct s_plato
+{
+    struct timeval	die_time;
+    struct timeval	nap_time;
+    struct timeval	eat_time;
+    int	appetite;
+    int	seat;
+    int	table_size;
+}	t_plato;
+
 // helper functions
 int	ph_atoi(char *str);
 int	timeval_to_ms(struct timeval t);

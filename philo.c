@@ -76,50 +76,56 @@ struct timeval	ms_to_timeval(int t)
 	return (ret_time);
 }
 
+// Debug function to print philosopher characteristics
+void	print_thesis(t_plato p)
+{
+	printf("philos: %i\tSitting at: %i\ndie after: %i\neat for: %i\nsleep for: %i\neat until: %i",
+			p.table_size, p.seat, timeval_to_ms(p.die_time), timeval_to_ms(p.eat_time),
+			timeval_to_ms(p.nap_time), p.appetite);
+}
+
 void	launch_phil(void *ptr)
 {
-	char	*msg;
+	t_plato	p;
 
-	msg = (char *)ptr;
-    printf("i ama philsopher thread");
-	printf("%s", msg);
+	p = (*((t_plato *) ptr));	// NOTE all these brackets, Cast to t_plato first, then deref.
+	print_thesis(p);
 }
 
 // DONE Convert time parameters to an appropriate format (struct?)
 int	main(int argc, char **argv)
 {
 	int			num_philos;
-	struct timeval	die_time;
-	struct timeval	eat_time;
-	struct timeval	sleep_time;
-	int			meals;
-    pthread_t	phil1;
-    pthread_t	phil2;
-	char	*msg = "what then";
-
+	int	i;
+    pthread_t	*phil;
+	t_plato		philcharacter;
 
 	if ((argc == 5) || (argc == 6))
 	{
 		num_philos = ph_atoi(argv[1]);
-		die_time = ms_to_timeval(ph_atoi(argv[2]));
-		eat_time = ms_to_timeval(ph_atoi(argv[3]));
-		sleep_time = ms_to_timeval(ph_atoi(argv[4]));
+		philcharacter.die_time = ms_to_timeval(ph_atoi(argv[2]));
+		philcharacter.eat_time = ms_to_timeval(ph_atoi(argv[3]));
+		philcharacter.nap_time = ms_to_timeval(ph_atoi(argv[4]));
 		if (argc == 6)
-			meals = ph_atoi(argv[5]);
+			philcharacter.appetite = ph_atoi(argv[5]);
 		else
-			meals = -1;
-		printf("philos: %i\ndie after: %i\neat for: %i\nsleep for: %i\neat until: %i",
-			num_philos, timeval_to_ms(die_time), timeval_to_ms(eat_time),
-			timeval_to_ms(sleep_time), meals);
-		// HACK testing the log function, delete later.
-		report_state(1, 3);
-		report_state(6, 5);
-        pthread_create(&phil1, NULL, (void *) &launch_phil, msg);
-        pthread_create(&phil2, NULL, (void *) &launch_phil, "another message");
+			philcharacter.appetite = -1;
+		philcharacter.table_size = num_philos;
+		i = 1;
+		phil = NULL;
+		while (i <= num_philos)
+		{
+			// TODO Confirm that this format creates treads with mstly-identical data and unique seat
+			philcharacter.seat = i;
+			if (pthread_create(phil, NULL, (void *) &launch_phil, &philcharacter) != 0)
+				printf("Failed to create thread!");
+			i++;
+		}
+
 		// NOTE the join call waits for all the threads to arrive. Without this the program
 		// gets to the end before thread 2 finishes.
-		pthread_join(phil1, NULL);
-		pthread_join(phil2, NULL);
+		// NOTE I don't know if this form would work.
+		pthread_join(*phil, NULL);
 	}
 	return (0);
 }

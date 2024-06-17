@@ -52,8 +52,53 @@ This is MT-Safe, meaning it can be  called in the presence of other threads.
   time before they would die?
 - track the time
   With no global variable allowed, we use gettimeofday
-*** NEXT read up on phthreads
+*** read up on pthreads
 variables, structs. What do they hold?
 Also refer back to this? https://www.cs.cmu.edu/afs/cs/academic/class/15492-f07/www/pthreads.html
-** [2024-06-07 vie] Mutex functionns are hard to find, at least the man pages are.
-
+http://www.csc.villanova.edu/~mdamian/threads/posixthreads.html
+** Mutex functions
+https://www.geeksforgeeks.org/mutex-lock-for-linux-thread-synchronization/
+As usual with that website, badly written but useful information.
+First initialise, then lock:
+#+begin_src c
+int pthread_mutex_init(mutex, attributes);
+int pthread_mutex_lock(*mutex);
+#+end_src
+So then I wonder what the / how the mutex protects a thing (an area of code?).
+So for example, place it around the function that is called from pthread_create (currently launch_phil, but I suppose I will be changing that.)
+The forks (between each philo) have to be protected by mutexes. **This implies that the thread called will be something like "philosopher takes a fork".**
+** What is the diff between join and detach of threads
+And how would I make them work?
+detached threads finish and release their resources without having to join.
+...so??
+All the threads have to be either joined or detached. Detaching an already-detached thread means trouble (undefined behaviour).
+"join is the equivalent of wait for processes" - so I could have a join on a locked fork request...?
+" Joinable threads must be reaped or killed by other threads (using pthread_join) in order to free memory resources. Detached threads cannot be reaped or killed by other threads, and resources are automatically reaped on termination"
+* modelling the task
+** philosopher = thread
+They eat, or sleep, or think - do I need to store that state?
+** fork = mutex
+In the simple sense, an array of mutexes; but how to number them?
+If between the philosophers, the philos want their number fork *and* +1 (max number philo takes 0 instead of that).
+** Setting up variables.
+number of forks = number of philosophers.
+Number of philosophers = number of threads to create
+Both of these would be arrays of ahead-unknown size: i.e. pointers
+Meals -- when a philo reaches this number, they no longer try to eat(?) or they don't have(?) or carry on. When *all* philos reach that, we end the sim.
+2nd arg of pthread_create is attributes - could use this to store philosopher number (or a general state-of-philosopher struct)
+** When do the threads join / synchronise?
+Can we have the join within the thread function? Must be possible.
+** What goes in our function, and where?
+Imagine from the POV of the philo.
+First off, tries to eat (possible to have a range of different starting strategies)
+Takes two forks. Eat for X, releases forks, sleeps for Y.
+If can't take two forks, release the other? Or wait and try again?
+* Submission requirements
+** [#A] Match all requirements in project sheet
+** HOLD presubmission checklist
+- [ ] remove stdio.h from my files
+- [ ] remove spare (ft_)printfs
+- [ ] norminette all my files (inc libft)
+- [ ] compile from fresh checkout
+- [ ] run from fresh checkout
+- [ ] Files are to be in a dir philo/ or similar.
