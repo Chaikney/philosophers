@@ -82,7 +82,23 @@ In the simple sense, an array of mutexes; but how to number them?
 If between the philosophers, the philos want their number fork *and* +1 (max number philo takes 0 instead of that).
 I have given each philosopher a (space to hold a) mutex on each side. To "pick up" a fork they must...
 #+begin_src c
-pthread_mutex_lock(philo->l_fork);
+if ((pthread_mutex_lock(p.l_fork) == 0) && (pthread_mutex_lock(p.r_fork) == 0))
+		{
+			report_state(p.seat, EAT);
+			usleep(p.data->eat_time * 1000);	// HACK this is wrong because we arent storing microseconds (yet)
+			p.eaten++;	// NOTE Does this record need to be locked while updating?
+			pthread_mutex_unlock(p.l_fork);
+			pthread_mutex_unlock(p.r_fork);
+			report_state(p.seat, NAP);
+			usleep(p.data->nap_time * 1000);	// HACK Wrong, should be in microseconds
+		}
+		else
+		{
+			pthread_mutex_unlock(p.l_fork);
+			// FIXME Unitialised value and an invalid read in line below.
+			pthread_mutex_unlock(p.r_fork);
+			report_state(p.seat, 4);
+        }
 #+end_src
 ** Setting up variables.
 number of forks = number of philosophers.
@@ -90,6 +106,8 @@ Number of philosophers = number of threads to create
 Both of these would be arrays of ahead-unknown size: i.e. pointers
 Meals -- when a philo reaches this number, they no longer try to eat(?) or they don't have(?) or carry on. When *all* philos reach that, we end the sim.
 2nd arg of pthread_create is attributes - could use this to store philosopher number (or a general state-of-philosopher struct). NO, attributes are things like does it start detached.
+** Protecting things other than the "forks", i.e logging
+Without a mutex protecting the "report_state" function, I sometimes get interleaved messages. This implies storing that (or a link to it) in each thread/philosopher. So create philo->report mutex OR because this is *shared* between all philosophers (only one can report at once), is this for the t_table?
 ** allocation and initialisation
 Doing my head in.
 Any struct or typedef needs allocated, is that true?
@@ -104,6 +122,10 @@ First off, tries to eat (possible to have a range of different starting strategi
 Takes two forks. Eat for X, releases forks, sleeps for Y.
 ? - Do we take the eating time as sleep as well? There's no reason it should  keep taking up processor time (unless to log something?)
 If can't take two forks, release the other? Or wait and try again?
+** TODO Sort out times
+record the start time in t_table
+What to do with the timestamps required by the report function. - how do you do the sums?
+Need to be careful with the int limits because it could easily overflow. What size do you need?
 * Submission requirements
 ** [#A] Match all requirements in project sheet
 ** HOLD presubmission checklist

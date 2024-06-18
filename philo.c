@@ -33,17 +33,18 @@ int	ph_atoi(char *str)
 // TODO The timestamp should not be "now" but "milliseconds since start"
 // FIXME This is often overlapped, how to prevent that? Another mutex?
 // ...that would mean only one thread accessing this code at once, so I guess yes.
-void	report_state(int phil, int state)
+void	report_state(t_plato phil, int state)
 {
-//	struct timeval	now;
-	//int			milli;
+	struct timeval	now;
+	int			milli;
+	int	seat;
 
+	seat = phil.seat;
 	if ((state > 0) && (state < 6))
 	{
-//		gettimeofday(&now, NULL);
-	//	milli = timeval_to_ms(now);
-//		printf("%i %i ", milli, phil);
-		printf("%i ", phil);
+		gettimeofday(&now, NULL);
+		milli = timeval_to_ms(now) - timeval_to_ms((phil.data->started));
+		printf("%i %i ", milli, seat);
 		if (state == HAS)
 			printf("has taken a fork\n");
 		if (state == EAT)
@@ -85,6 +86,7 @@ void	print_menu(t_table t)
 {
 	printf("A booking for %i philophers\ndie after: %i\neat for: %i\nsleep for: %i\neat until: %i",
 			t.table_size, t.die_time, t.eat_time, t.nap_time, t.appetite);
+	printf("\nTimer starts at %i millsecs(?)", timeval_to_ms(t.started));
 }
 
 //Debug function to print things about the philsopher
@@ -115,12 +117,12 @@ void	launch_phil(void *ptr)
 		// FIXME Invalid read in the line below
 		if ((pthread_mutex_lock(p.l_fork) == 0) && (pthread_mutex_lock(p.r_fork) == 0))
 		{
-			report_state(p.seat, EAT);
+			report_state(p, EAT);
 			usleep(p.data->eat_time * 1000);	// HACK this is wrong because we arent storing microseconds (yet)
 			p.eaten++;	// NOTE Does this record need to be locked while updating?
 			pthread_mutex_unlock(p.l_fork);
 			pthread_mutex_unlock(p.r_fork);
-			report_state(p.seat, NAP);
+			report_state(p, NAP);
 			usleep(p.data->nap_time * 1000);	// HACK Wrong, should be in microseconds
 		}
 		else
@@ -128,7 +130,7 @@ void	launch_phil(void *ptr)
 			pthread_mutex_unlock(p.l_fork);
 			// FIXME Unitialised value and an invalid read in line below.
 			pthread_mutex_unlock(p.r_fork);
-			report_state(p.seat, 4);
+			report_state(p, 4);
 		}
 	}
 }
@@ -150,6 +152,7 @@ void	get_general_data(t_table *dat, int argc, char **argv)
 			dat->appetite = ph_atoi(argv[5]);
 		else
 			dat->appetite = -1;
+		gettimeofday(&dat->started, NULL);
 	}
 	else
 		exit(EXIT_FAILURE);
@@ -214,7 +217,7 @@ int	main(int argc, char **argv)
 	i = 0;
 	house_rules = malloc(sizeof(t_table));
 	get_general_data(house_rules, argc, argv);
-//	print_menu(*house_rules);
+	print_menu(*house_rules);
 	philo = NULL;
 	forks = malloc(sizeof(pthread_mutex_t) * house_rules->table_size);
 	forks_laid(forks, house_rules->table_size);

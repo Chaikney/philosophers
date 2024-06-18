@@ -26,6 +26,8 @@ typedef	struct s_table
     int	eat_time;
     int	table_size;
     int	appetite;
+    pthread_mutex_t	report;
+    struct timeval	started;
 }	t_table;
 
 // Platonic ideal of philospher
@@ -48,6 +50,6 @@ int	timeval_to_ms(struct timeval t);
 struct timeval	ms_to_timeval(int t);
 
 // logging
-void	report_state(int phil, int state);
+void	report_state(t_plato phil, int state);
 
 #endif
