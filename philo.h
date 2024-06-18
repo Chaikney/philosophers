@@ -19,29 +19,29 @@
 
 // The shared conditions that they are dining at,
 // i.e. the table rule.
-typedef	struct s_table
+typedef struct s_table
 {
-    int	die_time;
-    int	nap_time;
-    int	eat_time;
-    int	table_size;
-    int	appetite;
-    pthread_mutex_t	report;
-    struct timeval	started;
+	int	die_time;
+	int	nap_time;
+	int	eat_time;
+	int	table_size;
+	int	appetite;
+	pthread_mutex_t	report;
+	struct timeval	started;
 }	t_table;
 
 // Platonic ideal of philospher
 // Each thread can keep track of their state and needs here.
 // Links to the unchanging data, I guess so we set it up.
 // TODO Add stuff back to this - the locks they have? "left and right hand?"
-typedef	struct s_plato
+typedef struct s_plato
 {
-    t_table	*data;
-    int	seat;
-    pthread_t	id;
-    int	eaten;
-    pthread_mutex_t	*l_fork;	// With these two, is it linked to anything? Or just pointing?
-    pthread_mutex_t	*r_fork;	// How does the identification with the forks work? They must exist
+	t_table	*data;
+	int	seat;
+	pthread_t	id;
+	int	eaten;
+	pthread_mutex_t	*l_fork;	// With these two, is it linked to anything? Or just pointing?
+	pthread_mutex_t	*r_fork;	// How does the identification with the forks work? They must exist
 }	t_plato;
 
 // helper functions

@@ -5,9 +5,9 @@
 // TODO Add 42 header.
 
 // Log state changes of a philosopher.
-// FIXME This is often overlapped, how to prevent that? Another mutex?
+// FIXED This is often overlapped, how to prevent that? Another mutex?
 // ...that would mean only one thread accessing this code at once, so I guess yes.
-// FIXME The timestamp does not work (with the mutex?) I get 0 always
+// FIXED The timestamp does not work (with the mutex?) I get 0 always
 // FIXED The report lock is not initialised?
 void	report_state(t_plato phil, int state)
 {
@@ -47,6 +47,7 @@ void	report_state(t_plato phil, int state)
 // TODO Do I have to run lock a philosopher's record as well (what does that mean?)
 // TODO Getting too long; break up the function stages (get forks, eat, sleep)
 // TODO Need to check to see if a philo has died
+// TODO Give this a better name than launch_phil
 void	launch_phil(void *ptr)
 {
 	t_plato	p;
