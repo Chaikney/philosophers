@@ -10,6 +10,13 @@
 # include <stdlib.h>	//malloc
 # include <unistd.h>	// usleep
 
+// Philosopher state constants to make the reporting easier to read in code
+# define HAS 1
+# define EAT 2
+# define NAP 3
+# define HMM 4
+# define DIE 5
+
 // The shared conditions that they are dining at,
 // i.e. the table rule.
 typedef	struct s_table

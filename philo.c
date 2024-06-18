@@ -30,7 +30,9 @@ int	ph_atoi(char *str)
 }
 
 // Log state changes of a philosopher.
-// TODO The timestamp should  not be "now" but "milliseconds since start"
+// TODO The timestamp should not be "now" but "milliseconds since start"
+// FIXME This is often overlapped, how to prevent that? Another mutex?
+// ...that would mean only one thread accessing this code at once, so I guess yes.
 void	report_state(int phil, int state)
 {
 //	struct timeval	now;
@@ -42,15 +44,15 @@ void	report_state(int phil, int state)
 	//	milli = timeval_to_ms(now);
 //		printf("%i %i ", milli, phil);
 		printf("%i ", phil);
-		if (state == 1)
+		if (state == HAS)
 			printf("has taken a fork\n");
-		if (state == 2)
+		if (state == EAT)
 			printf("is eating\n");
-		if (state == 3)
+		if (state == NAP)
 			printf("is sleeping\n");
-		if (state == 4)
+		if (state == HMM)
 			printf("is thinking\n");
-		if (state == 5)
+		if (state == DIE)
 			printf("died\n");
 	}
 }
@@ -113,12 +115,12 @@ void	launch_phil(void *ptr)
 		// FIXME Invalid read in the line below
 		if ((pthread_mutex_lock(p.l_fork) == 0) && (pthread_mutex_lock(p.r_fork) == 0))
 		{
-			report_state(p.seat, 2);
+			report_state(p.seat, EAT);
 			usleep(p.data->eat_time * 1000);	// HACK this is wrong because we arent storing microseconds (yet)
 			p.eaten++;	// NOTE Does this record need to be locked while updating?
 			pthread_mutex_unlock(p.l_fork);
 			pthread_mutex_unlock(p.r_fork);
-			report_state(p.seat, 3);
+			report_state(p.seat, NAP);
 			usleep(p.data->nap_time * 1000);	// HACK Wrong, should be in microseconds
 		}
 		else
