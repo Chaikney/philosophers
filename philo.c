@@ -30,15 +30,16 @@ int	ph_atoi(char *str)
 }
 
 // Log state changes of a philosopher.
-// TODO The timestamp should not be "now" but "milliseconds since start"
 // FIXME This is often overlapped, how to prevent that? Another mutex?
 // ...that would mean only one thread accessing this code at once, so I guess yes.
+// FIXME The timestamp does not work (with the mutex?) I get 0 always
 void	report_state(t_plato phil, int state)
 {
 	struct timeval	now;
 	int			milli;
 	int	seat;
 
+	pthread_mutex_lock(&phil.data->report);
 	seat = phil.seat;
 	if ((state > 0) && (state < 6))
 	{
@@ -56,6 +57,7 @@ void	report_state(t_plato phil, int state)
 		if (state == DIE)
 			printf("died\n");
 	}
+	pthread_mutex_unlock(&phil.data->report);
 }
 
 // Convert a timeval struct into an int representing a number of
