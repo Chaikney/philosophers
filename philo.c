@@ -33,6 +33,7 @@ int	ph_atoi(char *str)
 // FIXME This is often overlapped, how to prevent that? Another mutex?
 // ...that would mean only one thread accessing this code at once, so I guess yes.
 // FIXME The timestamp does not work (with the mutex?) I get 0 always
+// FIXME The report lock is not initialised?
 void	report_state(t_plato phil, int state)
 {
 	struct timeval	now;
@@ -57,7 +58,7 @@ void	report_state(t_plato phil, int state)
 		if (state == DIE)
 			printf("died\n");
 	}
-	pthread_mutex_unlock(&phil.data->report);
+	pthread_mutex_unlock(&phil.data->report);	// FIXME Uninitialised value here
 }
 
 // Convert a timeval struct into an int representing a number of
@@ -108,6 +109,7 @@ void	print_placecard(t_plato p)
 // Maybe first imagine the philosoper as individualists
 // DONE Add check for number of meals eaten
 // TODO Do I have to run lock a philosopher's record as well (what does that mean?)
+// TODO Getting too long; break up the function stages (get forks, eat, sleep)
 void	launch_phil(void *ptr)
 {
 	t_plato	p;
@@ -116,7 +118,7 @@ void	launch_phil(void *ptr)
 	print_placecard(p);
 	while ((p.eaten < p.data->appetite) || (p.data->appetite = -1))
 	{
-		// FIXME Invalid read in the line below
+		// FIXME Invalid read in the right fork part of the line below
 		if ((pthread_mutex_lock(p.l_fork) == 0) && (pthread_mutex_lock(p.r_fork) == 0))
 		{
 			report_state(p, EAT);
@@ -165,40 +167,44 @@ void	get_general_data(t_table *dat, int argc, char **argv)
 // allocate what is needed for one philo struct
 // TODO Special case set up for first and last philosopher's forks
 // TODO What do I do with a place to put thread ID?(Nothing seesm to be OK so far)
-// FIXME The lowest seat ID is supposed to be 1 not 0 (per assignment)
+// FIXED The lowest seat ID is supposed to be 1 not 0 (per assignment)
 // so let 0 rep their left fork and their seat no (+1), the right
-void	setup_philos(t_plato *phil,  pthread_mutex_t **fork, t_table *rules)
+// NOTE table size is the number of forks and philos. size -1 is the final index position
+// Therefore the final index entry has to loop back to 0 for one fork
+void	setup_philos(t_plato *phil,  t_table *rules)
 {
 	int	i;
 
 	i = 0;
-
-	while (i < rules->table_size)
+	while (i < (rules->table_size - 1))
 	{
 		phil[i].data = rules;
 		phil[i].seat = i + 1;
 		phil[i].eaten = 0;
-		phil[i].l_fork = fork[i];
-		phil[i].r_fork = fork[i + 1];
 		i++;
 	}
-	phil[rules->table_size - 1].r_fork = fork[0];
 }
 
 // Allocate an array of mutexes. Initialise them, too?
 // Seems a bit much when I have NO IDEA what I am doing with the threads, even.
-// TODO Check that these are linked correctly to the philsophers
-void	forks_laid(pthread_mutex_t *forks, int n)
+// TODO Check that these are linked correctly to the philosophers
+void	forks_laid(pthread_mutex_t *forks, t_plato *p)
 {
 	int	i;
+	int	n;
 
 	i = 0;
+	n = p->data->table_size;
 	while (i < n)
 	{
-//		printf("placing fork %i", i);
 		pthread_mutex_init(&forks[i], NULL);
+		p[i].l_fork = &forks[i];
+		p[i].r_fork = &forks[i + 1];
 		i++;
 	}
+	pthread_mutex_init(&forks[i], NULL);
+	p[n -1].l_fork = &forks[i];
+	p[n - 1].r_fork = &forks[0];
 }
 
 // Get parameters stored
@@ -221,22 +227,20 @@ int	main(int argc, char **argv)
 	get_general_data(house_rules, argc, argv);
 	print_menu(*house_rules);
 	philo = NULL;
-	forks = malloc(sizeof(pthread_mutex_t) * house_rules->table_size);
-	forks_laid(forks, house_rules->table_size);
 	philo = malloc(sizeof(t_plato) * house_rules->table_size);
-	setup_philos(philo, &forks, house_rules);
-//	printf("create many threads");
-	while (i < house_rules->table_size)
+	setup_philos(philo, house_rules);
+	forks = malloc(sizeof(pthread_mutex_t) * house_rules->table_size);
+	forks_laid(forks, philo);
+	while (i < (house_rules->table_size) - 1)
 	{
 		pthread_create(&philo[i].id, NULL, (void *) &launch_phil, &philo[i]);
-	//	printf("...%i...", i);
 		i++;
 	}
-//	printf("\tdone!");
 	// FIXME This intends to wait for all threads to join; don't think it does that.
-	while (i++ < house_rules->table_size)
+	i = 0;
+	while (i++ < (house_rules->table_size - 1))
 		pthread_join(philo[i].id, NULL);
-	usleep(10000000);
+//	usleep(10000000);
 	free(forks);
 	free(house_rules);
 	free(philo);
