@@ -92,9 +92,9 @@ struct timeval	ms_to_timeval(int t)
 // TODO Add checks for the ability to grab a fork and a pause or release when it fails
 // Remember that each of these threads is independent but trying to access shared things,.
 // Maybe first imagine the philosoper as individualists
-// DONE Add check for number of meals eaten
 // TODO Do I have to run lock a philosopher's record as well (what does that mean?)
 // TODO Getting too long; break up the function stages (get forks, eat, sleep)
+// TODO Need to check to see if a philo has died
 void	launch_phil(void *ptr)
 {
 	t_plato	p;
@@ -127,7 +127,7 @@ void	launch_phil(void *ptr)
 // FIXED Segfualt due to invalid write (nap_time, but maybe more gen problem as the thing moves)
 // NOTE Fix was to allocate sizeof(t_table) before arriving here
 // This fills the parameters into t_table struct
-// TODO Error checking - most of these are invalid if less than zero and should end the program
+// TODO Error checking - clean up routine needed.
 void	get_general_data(t_table *dat, int argc, char **argv)
 {
 
@@ -145,6 +145,8 @@ void	get_general_data(t_table *dat, int argc, char **argv)
 		pthread_mutex_init(&dat->report, NULL);
 	}
 	else
+		exit(EXIT_FAILURE);
+	if ((dat->table_size < 0) || (dat->die_time < 0) || (dat->eat_time < 0) || (dat->nap_time < 0))
 		exit(EXIT_FAILURE);
 }
 
@@ -188,7 +190,7 @@ void	forks_laid(pthread_mutex_t *forks, t_plato *p)
 		p[i].r_fork = &forks[i + 1];
 		i++;
 	}
-	pthread_mutex_init(&forks[i], NULL);
+	pthread_mutex_init(&forks[i], NULL);	// FIXME invalid write here
 	p[n -1].l_fork = &forks[i];
 	p[n - 1].r_fork = &forks[0];
 }
