@@ -89,41 +89,52 @@ void	print_menu(t_table t)
 void	print_placecard(t_plato p)
 {
 	printf("\nSitting in place: %i", p.seat);
+	printf("\tHas eaten %i meals", p.eaten);
 }
 
 // TODO When dining they do what? Take forks to eat
 // TODO When they sleep, what?j
-// FIXME Why does the report state never happen? I think it takes too long. Hold all else, how?
+// FIXME Why does the report state often not happen? I think it takes too long. Hold all else, how?
+// FIXME It is possible for the reporting to be interlaced.
 // TODO I guess this has to be a loop that breaks when the meal condition is met.
 // TODO Add checks for the ability to grab a fork and a pause or release when it fails
 // Remember that each of these threads is independent but trying to access shared things,.
 // Maybe first imagine the philosoper as individualists
+// DONE Add check for number of meals eaten
+// TODO Do I have to run lock a philosopher's record as well (what does that mean?)
 void	launch_phil(void *ptr)
 {
 	t_plato	p;
 
-	printf("in the launch thread what will happen");
 	p = (*((t_plato *) ptr));	// NOTE all these brackets, Cast to t_plato first, then deref.
-//	print_placecard(p);
-	if ((pthread_mutex_lock(p.l_fork) == 0) && (pthread_mutex_lock(p.r_fork) == 0))
+	print_placecard(p);
+	while ((p.eaten < p.data->appetite) || (p.data->appetite = -1))
 	{
-		report_state(p.seat, 2);	// HACK eating with one fork so this is wrong
-		usleep(p.data->eat_time * 1000);	// HACK this is wrong because we arent storing microseconds (yet)
-		pthread_mutex_unlock(p.l_fork);
-		pthread_mutex_unlock(p.r_fork);
-		report_state(p.seat, 3);
-		usleep(p.data->nap_time * 1000);	// HACK Wrong, should be in microseconds
-	}
-	else
-	{
-		pthread_mutex_unlock(p.l_fork);
-		pthread_mutex_unlock(p.r_fork);
-		report_state(p.seat, 4);
+		// FIXME Invalid read in the line below
+		if ((pthread_mutex_lock(p.l_fork) == 0) && (pthread_mutex_lock(p.r_fork) == 0))
+		{
+			report_state(p.seat, 2);
+			usleep(p.data->eat_time * 1000);	// HACK this is wrong because we arent storing microseconds (yet)
+			p.eaten++;	// NOTE Does this record need to be locked while updating?
+			pthread_mutex_unlock(p.l_fork);
+			pthread_mutex_unlock(p.r_fork);
+			report_state(p.seat, 3);
+			usleep(p.data->nap_time * 1000);	// HACK Wrong, should be in microseconds
+		}
+		else
+		{
+			pthread_mutex_unlock(p.l_fork);
+			// FIXME Unitialised value and an invalid read in line below.
+			pthread_mutex_unlock(p.r_fork);
+			report_state(p.seat, 4);
+		}
 	}
 }
 
 // FIXED Segfualt due to invalid write (nap_time, but maybe more gen problem as the thing moves)
 // NOTE Fix was to allocate sizeof(t_table) before arriving here
+// This fills the parameters into t_table struct
+// TODO Error checking - most of these are invalid if less than zero and should end the program
 void	get_general_data(t_table *dat, int argc, char **argv)
 {
 
@@ -159,6 +170,7 @@ void	setup_philos(t_plato *phil,  pthread_mutex_t **fork, t_table *rules)
 	{
 		phil[i].data = rules;
 		phil[i].seat = i + 1;
+		phil[i].eaten = 0;
 		phil[i].l_fork = fork[i];
 		phil[i].r_fork = fork[i + 1];
 		i++;
@@ -190,7 +202,6 @@ void	forks_laid(pthread_mutex_t *forks, int n)
 // WOnder why it is crashing this time.
 // TODO something about timing - set a start time, store something in the philo
 // TODO Try compilation without thread sanitize option
-// TODO Add check for number of meals eaten
 int	main(int argc, char **argv)
 {
 	t_plato		*philo;

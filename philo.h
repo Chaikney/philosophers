@@ -30,6 +30,7 @@ typedef	struct s_plato
     t_table	*data;
     int	seat;
     pthread_t	id;
+    int	eaten;
     pthread_mutex_t	*l_fork;	// With these two, is it linked to anything? Or just pointing?
     pthread_mutex_t	*r_fork;	// How does the identification with the forks work? They must exist
 }	t_plato;
