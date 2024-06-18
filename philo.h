@@ -52,4 +52,7 @@ struct timeval	ms_to_timeval(int t);
 // logging
 void	report_state(t_plato phil, int state);
 
+// debugging functions that can be removed (or dectivated) later
+void	print_placecard(t_plato p);
+void	print_menu(t_table t);
 #endif

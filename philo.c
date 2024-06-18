@@ -33,7 +33,7 @@ int	ph_atoi(char *str)
 // FIXME This is often overlapped, how to prevent that? Another mutex?
 // ...that would mean only one thread accessing this code at once, so I guess yes.
 // FIXME The timestamp does not work (with the mutex?) I get 0 always
-// FIXME The report lock is not initialised?
+// FIXED The report lock is not initialised?
 void	report_state(t_plato phil, int state)
 {
 	struct timeval	now;
@@ -82,21 +82,6 @@ struct timeval	ms_to_timeval(int t)
 	ret_time.tv_sec = t / 1000;
 	ret_time.tv_usec = (t % 1000) * 1000;
 	return (ret_time);
-}
-
-// Debug function to print the house rules
-void	print_menu(t_table t)
-{
-	printf("A booking for %i philophers\ndie after: %i\neat for: %i\nsleep for: %i\neat until: %i",
-			t.table_size, t.die_time, t.eat_time, t.nap_time, t.appetite);
-	printf("\nTimer starts at %i millsecs(?)", timeval_to_ms(t.started));
-}
-
-//Debug function to print things about the philsopher
-void	print_placecard(t_plato p)
-{
-	printf("\nSitting in place: %i", p.seat);
-	printf("\tHas eaten %i meals", p.eaten);
 }
 
 // TODO When dining they do what? Take forks to eat
