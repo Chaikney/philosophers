@@ -49,6 +49,8 @@ typedef struct s_plato
 int	ph_atoi(char *str);
 int	timeval_to_ms(struct timeval t);
 struct timeval	ms_to_timeval(int t);
+int	ms_diff(struct timeval t1, struct timeval t2);
+struct timeval	add_ms(struct timeval t1, int ms);
 
 // logging
 void	report_state(t_plato phil, int state);

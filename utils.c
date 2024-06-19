@@ -49,3 +49,27 @@ int	ph_atoi(char *str)
 	}
 	return (n);
 }
+
+// Return the number of millseconds between two timevals
+// Return is positive if t1 is later than t2
+int	ms_diff(struct timeval t1, struct timeval t2)
+{
+	int	ms;
+	int	tmp;
+
+	ms = (t1.tv_sec - t2.tv_sec) * 1000;
+	tmp = (t1.tv_usec / 1000) - (t2.tv_usec / 1000);
+	ms = ms + tmp;
+	return (ms);
+}
+
+// Add a number of milliseconds to the supplied timeval
+// Return timeval. Works with a -ve value of ms
+struct timeval	add_ms(struct timeval t1, int ms)
+{
+	struct timeval	t2;
+
+	t2.tv_sec = t1.tv_sec + (ms / 1000);
+	t2.tv_usec = t1.tv_usec + ((ms % 1000) * 1000);
+	return (t2);
+}
