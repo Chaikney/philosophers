@@ -36,6 +36,25 @@ void	report_state(t_plato phil, int state)
 	pthread_mutex_unlock(&phil.data->report);	// FIXME Uninitialised value here
 }
 
+// Return 1 if the first time is later than deadline
+// -1 if not
+// 0 if equal (to millisecond precision(?))
+// First compare seconds then if equal look at the microseconds
+// TODO Could be a generalised calculating function instead?
+int	is_later(struct timeval now, struct timeval deadline)
+{
+	if (now.tv_sec > deadline.tv_sec)
+		return (1);
+	if (now.tv_sec < deadline.tv_sec)
+		return (-1);
+	if ((now.tv_usec / 1000) > (deadline.tv_usec / 1000))
+		return (1);
+	if ((now.tv_usec  / 1000) < (deadline.tv_usec / 1000))
+		return (-1);
+	else
+		return (0);
+}
+
 // TODO When dining they do what? Take forks to eat
 // TODO When they sleep, what?j
 // FIXME Why does the report state often not happen? I think it takes too long. Hold all else, how?
@@ -51,17 +70,19 @@ void	report_state(t_plato phil, int state)
 void	launch_phil(void *ptr)
 {
 	t_plato	p;
+	struct timeval	now;
 
 	p = (*((t_plato *) ptr));	// NOTE all these brackets, Cast to t_plato first, then deref.
 	print_placecard(p);
 	while ((p.eaten < p.data->appetite) || (p.data->appetite = -1))
 	{
-		// FIXME Invalid read in the right fork part of the line below
+		// FIXED? Invalid read in the right fork part of the line below
 		if ((pthread_mutex_lock(p.l_fork) == 0) && (pthread_mutex_lock(p.r_fork) == 0))
 		{
 			report_state(p, EAT);
-			usleep(p.data->eat_time * 1000);	// HACK this is wrong because we arent storing microseconds (yet)
+			p.starve_at = ms_to_timeval(timeval_to_ms(p.starve_at) + p.data->die_time);
 			p.eaten++;	// NOTE Does this record need to be locked while updating?
+			usleep(p.data->eat_time * 1000);	// HACK this is wrong because we arent storing microseconds (yet)
 			pthread_mutex_unlock(p.l_fork);
 			pthread_mutex_unlock(p.r_fork);
 			report_state(p, NAP);
@@ -70,9 +91,16 @@ void	launch_phil(void *ptr)
 		else
 		{
 			pthread_mutex_unlock(p.l_fork);
-			// FIXME Unitialised value and an invalid read in line below.
+			// FIXED? Unitialised value and an invalid read in line below.
 			pthread_mutex_unlock(p.r_fork);
-			report_state(p, 4);
+			report_state(p, HMM);
+		}
+		gettimeofday(&now, NULL);
+		//FIXME THis check fails: a philo died at 139 when die_time was 300
+		if (is_later(now, p.starve_at) == 1)
+		{
+			report_state(p, DIE);
+			exit(EXIT_SUCCESS);
 		}
 	}
 }
@@ -81,6 +109,7 @@ void	launch_phil(void *ptr)
 // NOTE Fix was to allocate sizeof(t_table) before arriving here
 // This fills the parameters into t_table struct
 // TODO Error checking - clean up routine needed.
+// NOTE If die_time is less than (eat_time + nap_time) the simulation is impossible
 void	get_general_data(t_table *dat, int argc, char **argv)
 {
 
@@ -118,6 +147,7 @@ void	setup_philos(t_plato *phil,  t_table *rules)
 		phil[i].data = rules;
 		phil[i].seat = i + 1;
 		phil[i].eaten = 0;
+		phil[i].starve_at = ms_to_timeval(timeval_to_ms(rules->started) + rules->die_time);
 		i++;
 	}
 }
@@ -155,6 +185,7 @@ void	forks_laid(pthread_mutex_t *forks, t_plato *p)
 // WOnder why it is crashing this time.
 // TODO something about timing - set a start time, store something in the philo
 // TODO Try compilation without thread sanitize option
+// TODO Function too long, some set up to move elsewhere.
 int	main(int argc, char **argv)
 {
 	t_plato		*philo;

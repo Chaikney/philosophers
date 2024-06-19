@@ -40,6 +40,7 @@ typedef struct s_plato
 	int	seat;
 	pthread_t	id;
 	int	eaten;
+	struct timeval	starve_at;
 	pthread_mutex_t	*l_fork;	// With these two, is it linked to anything? Or just pointing?
 	pthread_mutex_t	*r_fork;	// How does the identification with the forks work? They must exist
 }	t_plato;
