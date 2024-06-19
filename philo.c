@@ -106,12 +106,8 @@ void	get_general_data(t_table *dat, int argc, char **argv)
 //. Allocate mempory for the philosopher things.
 //Really hard not to call this "set table" I should get a prize
 // allocate what is needed for one philo struct
-// TODO Special case set up for first and last philosopher's forks
 // TODO What do I do with a place to put thread ID?(Nothing seesm to be OK so far)
 // FIXED The lowest seat ID is supposed to be 1 not 0 (per assignment)
-// so let 0 rep their left fork and their seat no (+1), the right
-// NOTE table size is the number of forks and philos. size -1 is the final index position
-// Therefore the final index entry has to loop back to 0 for one fork
 void	setup_philos(t_plato *phil,  t_table *rules)
 {
 	int	i;
@@ -126,9 +122,12 @@ void	setup_philos(t_plato *phil,  t_table *rules)
 	}
 }
 
-// Allocate an array of mutexes. Initialise them, too?
-// Seems a bit much when I have NO IDEA what I am doing with the threads, even.
+// Init and allocate an array of mutexes. Link them to each philosophers' L and R hands
 // TODO Check that these are linked correctly to the philosophers
+// TODO Special case set up for first and last philosopher's forks
+// so let 0 rep their left fork and their seat no (+1), the right
+// NOTE table size is the number of forks and philos. size -1 is the final index position
+// Therefore the final index entry has to loop back to 0 for one fork
 void	forks_laid(pthread_mutex_t *forks, t_plato *p)
 {
 	int	i;
@@ -143,8 +142,8 @@ void	forks_laid(pthread_mutex_t *forks, t_plato *p)
 		p[i].r_fork = &forks[i + 1];
 		i++;
 	}
-	pthread_mutex_init(&forks[i], NULL);	// FIXME invalid write here
-	p[n -1].l_fork = &forks[i];
+	pthread_mutex_init(&forks[n - 1], NULL);
+	p[n - 1].l_fork = &forks[n - 1];
 	p[n - 1].r_fork = &forks[0];
 }
 
