@@ -1,6 +1,4 @@
 #include "philo.h"
-#include <pthread.h>
-#include <unistd.h>
 
 // TODO Add 42 header.
 
@@ -36,16 +34,47 @@ void	report_state(t_plato phil, int state)
 	pthread_mutex_unlock(&phil.data->report);
 }
 
-// TODO When dining they do what? Take forks to eat
-// TODO When they sleep, what?j
-// FIXME Why does the report state often not happen? I think it takes too long. Hold all else, how?
-// FIXED? It is possible for the reporting to be interlaced.
-// TODO I guess this has to be a loop that breaks when the meal condition is met.
+// NOTE It seems very likely that we can be stuck in this function a while.
+// ...what then to do with catching death conidtiions within 10ms?
+// TODO Avoid deadlock by dropping left fork if can't get right one?
+// But if you can't get the lock what happens? Wait at this point, or fail?
+void	take_forks(t_plato p)
+{
+	pthread_mutex_lock(p.l_fork);
+	report_state(p, HAS);
+	pthread_mutex_lock(p.r_fork);
+	report_state(p, HAS);
+}
+
+// Report eating, update starvation time, increment meal count
+// sleep for eat_time before returning
+// Clearly this can't be safely called without p holding locks
+void	eat_food(t_plato p)
+{
+	struct timeval	now;
+
+	report_state(p, EAT);
+	gettimeofday(&now, NULL);
+	p.starve_at = add_ms(now, p.data->die_time);
+	p.eaten++;	// NOTE Does this record need to be locked while updating?
+	usleep(p.data->eat_time * 1000);
+}
+
+// Release the forks held and have a nap
+void	replace_forks_and_nap(t_plato p)
+{
+	pthread_mutex_unlock(p.l_fork);
+	pthread_mutex_unlock(p.r_fork);
+	report_state(p, NAP);
+	usleep(p.data->nap_time * 1000);
+}
+
+// I guess this has to be a loop that breaks when the meal condition is met.
 // TODO Add checks for the ability to grab a fork and a pause or release when it fails
 // Remember that each of these threads is independent but trying to access shared things,.
 // Maybe first imagine the philosoper as individualists
 // TODO Do I have to run lock a philosopher's record as well (what does that mean?)
-// TODO Getting too long; break up the function stages (get forks, eat, sleep)
+// DONE Getting too long; break up the function stages (get forks, eat, sleep)
 // TODO Need to check to see if a philo has died
 // TODO Give this a better name than launch_phil
 void	launch_phil(void *ptr)
@@ -54,33 +83,19 @@ void	launch_phil(void *ptr)
 	struct timeval	now;
 
 	p = (*((t_plato *) ptr));	// NOTE all these brackets, Cast to t_plato first, then deref.
-	print_placecard(p);
+//	print_placecard(p);	// HACK for debugging
+//	TODO Add a break-from loop condition for dead philosophers
 	while ((p.eaten < p.data->appetite) || (p.data->appetite = -1))
 	{
-		// FIXED? Invalid read in the right fork part of the line below
-		if ((pthread_mutex_lock(p.l_fork) == 0) && (pthread_mutex_lock(p.r_fork) == 0))
-		{
-			report_state(p, EAT);
-			p.starve_at = ms_to_timeval(timeval_to_ms(p.starve_at) + p.data->die_time);
-			p.eaten++;	// NOTE Does this record need to be locked while updating?
-			usleep(p.data->eat_time * 1000);	// HACK this is wrong because we arent storing microseconds (yet)
-			pthread_mutex_unlock(p.l_fork);
-			pthread_mutex_unlock(p.r_fork);
-			report_state(p, NAP);
-			usleep(p.data->nap_time * 1000);	// HACK Wrong, should be in microseconds
-		}
-		else
-		{
-			pthread_mutex_unlock(p.l_fork);
-			// FIXED? Unitialised value and an invalid read in line below.
-			pthread_mutex_unlock(p.r_fork);
-			report_state(p, HMM);
-		}
+		take_forks(p);
+		eat_food(p);
+		replace_forks_and_nap(p);
+		report_state(p, HMM);
 		gettimeofday(&now, NULL);
 		if (ms_diff(now, p.starve_at) > 0)	// HACK This is not readable or logical
 		{
 			report_state(p, DIE);
-			exit(EXIT_SUCCESS);
+			exit(EXIT_SUCCESS);	// TODO End simulation routine needed
 		}
 	}
 }
