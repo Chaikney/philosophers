@@ -2,6 +2,9 @@
 
 // TODO Add 42 header
 
+// A collection of general-purpose functions that do not
+// manipulate external data (and so do not need mutexes?)
+
 // Convert a timeval struct into an int representing a number of
 // milliseconds
 int	timeval_to_ms(struct timeval t)
@@ -72,4 +75,23 @@ struct timeval	add_ms(struct timeval t1, int ms)
 	t2.tv_sec = t1.tv_sec + (ms / 1000);
 	t2.tv_usec = t1.tv_usec + ((ms % 1000) * 1000);
 	return (t2);
+}
+
+// Return 1 if the first time is later than deadline
+// -1 if not
+// 0 if equal (to millisecond precision(?))
+// First compare seconds then if equal look at the microseconds
+// TODO May be un-needed and could be removed later.
+int	is_later(struct timeval now, struct timeval deadline)
+{
+	if (now.tv_sec > deadline.tv_sec)
+		return (1);
+	if (now.tv_sec < deadline.tv_sec)
+		return (-1);
+	if ((now.tv_usec / 1000) > (deadline.tv_usec / 1000))
+		return (1);
+	if ((now.tv_usec  / 1000) < (deadline.tv_usec / 1000))
+		return (-1);
+	else
+		return (0);
 }

@@ -33,26 +33,7 @@ void	report_state(t_plato phil, int state)
 		if (state == DIE)
 			printf("died\n");
 	}
-	pthread_mutex_unlock(&phil.data->report);	// FIXME Uninitialised value here
-}
-
-// Return 1 if the first time is later than deadline
-// -1 if not
-// 0 if equal (to millisecond precision(?))
-// First compare seconds then if equal look at the microseconds
-// TODO Could be a generalised calculating function instead?
-int	is_later(struct timeval now, struct timeval deadline)
-{
-	if (now.tv_sec > deadline.tv_sec)
-		return (1);
-	if (now.tv_sec < deadline.tv_sec)
-		return (-1);
-	if ((now.tv_usec / 1000) > (deadline.tv_usec / 1000))
-		return (1);
-	if ((now.tv_usec  / 1000) < (deadline.tv_usec / 1000))
-		return (-1);
-	else
-		return (0);
+	pthread_mutex_unlock(&phil.data->report);
 }
 
 // TODO When dining they do what? Take forks to eat
@@ -96,8 +77,7 @@ void	launch_phil(void *ptr)
 			report_state(p, HMM);
 		}
 		gettimeofday(&now, NULL);
-		//FIXME THis check fails: a philo died at 139 when die_time was 300
-		if (is_later(now, p.starve_at) == 1)
+		if (ms_diff(now, p.starve_at) > 0)	// HACK This is not readable or logical
 		{
 			report_state(p, DIE);
 			exit(EXIT_SUCCESS);
