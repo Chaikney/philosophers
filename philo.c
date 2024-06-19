@@ -58,7 +58,7 @@ int	is_later(struct timeval now, struct timeval deadline)
 // TODO When dining they do what? Take forks to eat
 // TODO When they sleep, what?j
 // FIXME Why does the report state often not happen? I think it takes too long. Hold all else, how?
-// FIXME It is possible for the reporting to be interlaced.
+// FIXED? It is possible for the reporting to be interlaced.
 // TODO I guess this has to be a loop that breaks when the meal condition is met.
 // TODO Add checks for the ability to grab a fork and a pause or release when it fails
 // Remember that each of these threads is independent but trying to access shared things,.

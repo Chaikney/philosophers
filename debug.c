@@ -18,4 +18,5 @@ void	print_placecard(t_plato p)
 {
 	printf("\nSitting in place: %i", p.seat);
 	printf("\tHas eaten %i meals", p.eaten);
+	printf("\tWill die at %i ms", timeval_to_ms(p.starve_at));
 }
