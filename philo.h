@@ -21,9 +21,9 @@
 // i.e. the table rule.
 typedef struct s_table
 {
-	int	die_time;
-	int	nap_time;
-	int	eat_time;
+	u_int64_t	die_time;
+	u_int64_t	nap_time;
+	u_int64_t	eat_time;
 	int	table_size;
 	int	appetite;
 	pthread_mutex_t	report;
@@ -52,10 +52,10 @@ void	get_general_data(t_table *dat, int argc, char **argv);
 
 // helper functions
 int	ph_atoi(char *str);
-int	timeval_to_ms(struct timeval t);
-struct timeval	ms_to_timeval(int t);
-int	ms_diff(struct timeval t1, struct timeval t2);
-struct timeval	add_ms(struct timeval t1, int ms);
+u_int64_t	timeval_to_ms(struct timeval t);
+struct timeval	ms_to_timeval(u_int64_t t);
+u_int64_t ms_diff(struct timeval t1, struct timeval t2);
+struct timeval	add_ms(struct timeval t1, u_int64_t ms);
 int	is_later(struct timeval now, struct timeval deadline);
 
 // logging

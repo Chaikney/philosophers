@@ -7,9 +7,9 @@
 
 // Convert a timeval struct into an int representing a number of
 // milliseconds
-int	timeval_to_ms(struct timeval t)
+u_int64_t	timeval_to_ms(struct timeval t)
 {
-	int	milliseconds;
+	u_int64_t	milliseconds;
 
 	milliseconds = 0;
 	milliseconds += t.tv_sec * 1000;
@@ -19,7 +19,7 @@ int	timeval_to_ms(struct timeval t)
 
 // Convert the given times in milliseconds to the timeval struct
 // which uses seconds and microseconds
-struct timeval	ms_to_timeval(int t)
+struct timeval	ms_to_timeval(u_int64_t t)
 {
 	struct timeval	ret_time;
 
@@ -55,10 +55,10 @@ int	ph_atoi(char *str)
 
 // Return the number of millseconds between two timevals
 // Return is positive if t1 is later than t2
-int	ms_diff(struct timeval t1, struct timeval t2)
+u_int64_t	ms_diff(struct timeval t1, struct timeval t2)
 {
-	int	ms;
-	int	tmp;
+	u_int64_t	ms;
+	u_int64_t	tmp;
 
 	ms = (t1.tv_sec - t2.tv_sec) * 1000;
 	tmp = (t1.tv_usec / 1000) - (t2.tv_usec / 1000);
@@ -68,7 +68,7 @@ int	ms_diff(struct timeval t1, struct timeval t2)
 
 // Add a number of milliseconds to the supplied timeval
 // Return timeval. Works with a -ve value of ms
-struct timeval	add_ms(struct timeval t1, int ms)
+struct timeval	add_ms(struct timeval t1, u_int64_t ms)
 {
 	struct timeval	t2;
 

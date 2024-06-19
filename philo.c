@@ -3,10 +3,7 @@
 // TODO Add 42 header.
 
 // Log state changes of a philosopher.
-// FIXED This is often overlapped, how to prevent that? Another mutex?
-// ...that would mean only one thread accessing this code at once, so I guess yes.
-// FIXED The timestamp does not work (with the mutex?) I get 0 always
-// FIXED The report lock is not initialised?
+// FIXME The way time works here we could report out of order and late without knowing.
 void	report_state(t_plato phil, int state)
 {
 	struct timeval	now;
@@ -18,7 +15,7 @@ void	report_state(t_plato phil, int state)
 	if ((state > 0) && (state < 6))
 	{
 		gettimeofday(&now, NULL);
-		milli = timeval_to_ms(now) - timeval_to_ms((phil.data->started));
+		milli = ms_diff(now, phil.data->started);
 		printf("%i %i ", milli, seat);
 		if (state == HAS)
 			printf("has taken a fork\n");
