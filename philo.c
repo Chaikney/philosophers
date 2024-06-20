@@ -64,9 +64,8 @@ void	log_action(t_plato p, t_logmsg msg)
 // Maybe first imagine the philosoper as individualists
 // TODO Do I have to run lock a philosopher's record as well (what does that mean?)
 // TODO Need to check to see if ANY philo has died - implies storing in data
-// TODO Give this a better name than launch_phil
 // FIXED Wild. Someone dies at 30 ms no matter what the parameters.
-void	launch_phil(void *ptr)
+void	dining_loop(void *ptr)
 {
 	t_plato	p;
 	struct timeval	now;
@@ -119,7 +118,7 @@ int	main(int argc, char **argv)
 	forks_laid(forks, philo);
 	while (i < (house_rules->table_size) - 1)
 	{
-		pthread_create(&philo[i].id, NULL, (void *) &launch_phil, &philo[i]);
+		pthread_create(&philo[i].id, NULL, (void *) &dining_loop, &philo[i]);
 		i++;
 	}
 	// FIXME This intends to wait for all threads to join; don't think it does that.
