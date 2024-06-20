@@ -104,12 +104,27 @@ int	all_done(t_plato p)
 	return (ans);
 }
 
+// Return 1 if *any* philosopher has died
+int	call_ambulance(t_plato p)
+{
+	int	ans;
+
+	ans = 0;
+	pthread_mutex_lock(&p.data->report);
+	if (p.data-> appetite != -1)
+	{
+		if (p.data->living < p.data->table_size)
+			ans = 1;
+	}
+	pthread_mutex_unlock(&p.data->report);
+	return (ans);
+}
+
 // I guess this has to be a loop that breaks when the meal condition is met.
-// TODO Add checks for the ability to grab a fork and a pause or release when it fails
 // Remember that each of these threads is independent but trying to access shared things,.
 // Maybe first imagine the philosoper as individualists
 // TODO Do I have to run lock a philosopher's record as well (what does that mean?)
-// TODO Some of these functions might need to take a pointer?
+// DONE Some of these functions might need to take a pointer?
 // TODO Check for *any* dead philo should end the sim for *all threads*
 void	dining_loop(void *ptr)
 {
@@ -118,7 +133,7 @@ void	dining_loop(void *ptr)
 	p = (*((t_plato *) ptr));	// NOTE all these brackets, Cast to t_plato first, then deref.
 //	print_placecard(p);	// HACK for debugging
 //	NOTE The thread ends when either the philosopher dies or everyone has eaten their fill
-	while ((p.is_dead == 0) && (all_done(p) == 0))
+	while ((p.is_dead == 0) && (all_done(p) == 0) && call_ambulance(p) == 0)
 	{
 		take_forks(p);
 		eat_food(&p);
