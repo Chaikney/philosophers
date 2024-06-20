@@ -44,3 +44,20 @@ void	replace_forks_and_nap(t_plato p)
 	log_action(p, make_msg(NAP, p.seat));
 	usleep(p.data->nap_time * 1000);
 }
+
+// Check to see if the philosopher has gone beyond starving time.
+// If yes, report message, decrease number of living at table.
+// TODO Should I flag the philo as being dead so can end loop?
+void	take_pulse(t_plato p)
+{
+	struct timeval	now;
+
+	gettimeofday(&now, NULL);
+	if (ms_after(now, p.starve_at))
+	{
+		log_action(p, make_msg(DIE, p.seat));
+		pthread_mutex_lock(&p.data->update);
+		p.data->living--;
+		pthread_mutex_unlock(&p.data->update);
+	}
+}

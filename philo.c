@@ -106,8 +106,7 @@ void	dining_loop(void *ptr)
 		replace_forks_and_nap(p);
 		msg = make_msg(HMM, p.seat);
 		log_action(p, msg);
-//		report_state(p, HMM);
-		gettimeofday(&now, NULL);
+		take_pulse(p);
 		// FIXME Something is wrong with the death condition.
 		if (ms_after(now, p.starve_at) > 0)	// HACK This is not readable or logical
 		{
