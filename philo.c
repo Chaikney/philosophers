@@ -32,6 +32,32 @@ void	report_state(t_plato phil, int state)
 	pthread_mutex_unlock(&phil.data->report);
 }
 
+// Alternate report_state using a struct of all needed data
+void	log_action(t_plato p, t_logmsg msg)
+{
+	struct timeval	now;
+	u_int64_t		milli;
+
+	pthread_mutex_lock(&p.data->report);
+	if ((msg.state > 0) && (msg.state < 6))
+	{
+		gettimeofday(&now, NULL);
+		milli = ms_after(msg.event_time, p.data->started);
+		printf("%lu %i ", milli, p.seat);
+		if (msg.state == HAS)
+			printf("has taken a fork\n");
+		if (msg.state == EAT)
+			printf("is eating\n");
+		if (msg.state == NAP)
+			printf("is sleeping\n");
+		if (msg.state == HMM)
+			printf("is thinking\n");
+		if (msg.state == DIE)
+			printf("died\n");
+	}
+	pthread_mutex_unlock(&p.data->report);
+}
+
 // NOTE It seems very likely that we can be stuck in this function a while.
 // ...what then to do with catching death conidtiions within 10ms?
 // TODO Avoid deadlock by dropping left fork if can't get right one?

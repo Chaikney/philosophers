@@ -45,6 +45,13 @@ typedef struct s_plato
 	pthread_mutex_t	*r_fork;	// How does the identification with the forks work? They must exist
 }	t_plato;
 
+typedef struct	s_logmsg
+{
+	int	state;
+	struct timeval	event_time;
+	int	philo;
+}	t_logmsg;
+
 // setup.c - read parameters, initialise variables, etc.
 void	forks_laid(pthread_mutex_t *forks, t_plato *p);
 void	setup_philos(t_plato *phil,  t_table *rules);
