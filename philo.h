@@ -6,7 +6,7 @@
 # include <stdio.h>	// printf
 # include <sys/time.h>	// timeval struct, getttimeofday
 # include <sys/types.h>
-# include <pthread.h>	// phtreads
+# include <pthread.h>	// pthreads, mutexes, etc
 # include <stdlib.h>	//malloc
 # include <unistd.h>	// usleep
 
@@ -48,6 +48,8 @@ typedef struct s_plato
 	int	seat;
 	pthread_t	id;
 	int	eaten;
+	int	is_dead;
+	int	is_sated;
 	struct timeval	starve_at;
 	pthread_mutex_t	*l_fork;	// With these two, is it linked to anything? Or just pointing?
 	pthread_mutex_t	*r_fork;	// How does the identification with the forks work? They must exist
@@ -72,6 +74,9 @@ struct timeval	ms_to_timeval(u_int64_t t);
 u_int64_t ms_after(struct timeval t1, struct timeval t2);
 struct timeval	add_ms(struct timeval t1, u_int64_t ms);
 int	is_later(struct timeval now, struct timeval deadline);
+
+// other
+int	all_done(t_plato p);
 
 // logging
 void	report_state(t_plato phil, int state);

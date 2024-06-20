@@ -54,6 +54,8 @@ void	setup_philos(t_plato *phil,  t_table *rules)
 		phil[i].seat = i + 1;
 		phil[i].eaten = 0;
 		phil[i].starve_at = add_ms(rules->started, rules->die_time);
+		phil[i].is_dead = 0;
+		phil[i].is_sated = 0;
 		i++;
 	}
 }
