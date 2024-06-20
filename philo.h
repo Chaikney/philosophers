@@ -75,6 +75,8 @@ int	is_later(struct timeval now, struct timeval deadline);
 
 // logging
 void	report_state(t_plato phil, int state);
+t_logmsg	*make_msg(int state, int seat);
+void	log_action(t_plato p, t_logmsg *msg);
 
 // actions
 void	take_forks(t_plato p);
