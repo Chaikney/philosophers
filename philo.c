@@ -34,19 +34,22 @@ void	report_state(t_plato phil, int state)
 
 // Alternate report_state using a struct of all needed data
 // Lock access to this so that no other thread prints something in the middle
-// TODO Every place that there is report_state we have this instead
-// TODO Implement something to make logmsg (timestamp especially)
+// DONE Every place that there is report_state we have this instead
+// DONE Implement something to make logmsg (timestamp especially)
 void	log_action(t_plato p, t_logmsg *msg)
 {
 	struct timeval	now;
 	u_int64_t		milli;
+	u_int64_t		delay;
 
 	pthread_mutex_lock(&p.data->report);
 	if ((msg->state > 0) && (msg->state < 6))
 	{
 		gettimeofday(&now, NULL);
 		milli = ms_after(msg->event_time, p.data->started);
+		delay = ms_after(now, msg->event_time);
 		printf("%lu %i ", milli, p.seat);
+		printf("(delay: %lu)", delay);
 		if (msg->state == HAS)
 			printf("has taken a fork\n");
 		if (msg->state == EAT)
@@ -57,6 +60,8 @@ void	log_action(t_plato p, t_logmsg *msg)
 			printf("is thinking\n");
 		if (msg->state == DIE)
 			printf("died\n");
+		if (delay >= 10)
+			printf("\n********ALERT!!!********* delayed message");
 	}
 	pthread_mutex_unlock(&p.data->report);
 	free(msg);	// NOTE Best free the message as soon as it used.
@@ -99,7 +104,6 @@ void	dining_loop(void *ptr)
 		take_forks(p);
 		eat_food(p);
 		replace_forks_and_nap(p);
-		pthread_mutex_lock(p.l_fork);
 		msg = make_msg(HMM, p.seat);
 		log_action(p, msg);
 //		report_state(p, HMM);
@@ -113,7 +117,6 @@ void	dining_loop(void *ptr)
 			msg = make_msg(DIE, p.seat);
 			log_action(p, msg);
 //			report_state(p, DIE);
-			free(msg);
 			return ;
 //			exit(EXIT_SUCCESS);	// TODO End simulation routine needed
 		}
