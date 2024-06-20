@@ -121,10 +121,10 @@ void	dining_loop(void *ptr)
 	while ((p.is_dead == 0) && (all_done(p) == 0))
 	{
 		take_forks(p);
-		eat_food(p);
+		eat_food(&p);
 		replace_forks_and_nap(p);
 		log_action(p, make_msg(HMM, p.seat));
-		take_pulse(p);
+		take_pulse(&p);
 	}
 }
 

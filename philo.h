@@ -85,9 +85,9 @@ void	log_action(t_plato p, t_logmsg *msg);
 
 // actions
 void	take_forks(t_plato p);
-void	eat_food(t_plato p);
+void	eat_food(t_plato *p);
 void	replace_forks_and_nap(t_plato p);
-void	take_pulse(t_plato p);
+void	take_pulse(t_plato *p);
 
 // debugging functions that can be removed (or dectivated) later
 void	print_placecard(t_plato p);
