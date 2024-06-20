@@ -26,6 +26,8 @@ typedef struct s_table
 	u_int64_t	eat_time;
 	int	table_size;
 	int	appetite;
+	int	sated;
+	int	living;
 	pthread_mutex_t	report;
 	struct timeval	started;
 }	t_table;

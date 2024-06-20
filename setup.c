@@ -26,6 +26,8 @@ void	get_general_data(t_table *dat, int argc, char **argv)
 		dat->die_time = (ph_atoi(argv[2]));
 		dat->eat_time = (ph_atoi(argv[3]));
 		dat->nap_time = (ph_atoi(argv[4]));
+		dat->sated = 0;
+		dat->living = dat->table_size;
 		if (argc == 6)
 			dat->appetite = ph_atoi(argv[5]);
 		else
@@ -50,14 +52,14 @@ void	setup_philos(t_plato *phil,  t_table *rules)
 		phil[i].data = rules;
 		phil[i].seat = i + 1;
 		phil[i].eaten = 0;
-		phil[i].starve_at = ms_to_timeval(timeval_to_ms(rules->started) + rules->die_time);
+		phil[i].starve_at = add_ms(rules->started, rules->die_time);
 		i++;
 	}
 }
 
 // Init and allocate an array of mutexes. Link them to each philosophers' L and R hands
 // TODO Check that these are linked correctly to the philosophers
-// TODO Special case set up for first and last philosopher's forks
+// DONE Special case set up for first and last philosopher's forks
 // so let 0 rep their left fork and their seat no (+1), the right
 // NOTE table size is the number of forks and philos. size -1 is the final index position
 // Therefore the final index entry has to loop back to 0 for one fork
