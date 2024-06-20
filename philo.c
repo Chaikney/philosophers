@@ -65,7 +65,7 @@ void	log_action(t_plato p, t_logmsg msg)
 // TODO Do I have to run lock a philosopher's record as well (what does that mean?)
 // TODO Need to check to see if ANY philo has died - implies storing in data
 // TODO Give this a better name than launch_phil
-// FIXME Wild. Someone dies at 30 ms no matter what the parameters.
+// FIXED Wild. Someone dies at 30 ms no matter what the parameters.
 void	launch_phil(void *ptr)
 {
 	t_plato	p;

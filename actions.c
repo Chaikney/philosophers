@@ -24,7 +24,13 @@ void	eat_food(t_plato p)
 	report_state(p, EAT);
 	gettimeofday(&now, NULL);
 	p.starve_at = add_ms(now, p.data->die_time);
-	p.eaten++;	// NOTE Does this record need to be locked while updating?
+	p.eaten++;	// TODO Do these records need to be locked while updating?
+	if (p.eaten >= p.data->appetite)
+	{
+		pthread_mutex_lock(&p.data->update);
+		p.data->sated++;
+		pthread_mutex_unlock(&p.data->update);
+	}
 	usleep(p.data->eat_time * 1000);
 }
 

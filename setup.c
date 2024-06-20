@@ -34,6 +34,7 @@ void	get_general_data(t_table *dat, int argc, char **argv)
 			dat->appetite = -1;
 		gettimeofday(&dat->started, NULL);
 		pthread_mutex_init(&dat->report, NULL);
+		pthread_mutex_init(&dat->update, NULL);
 	}
 	else
 		exit(EXIT_FAILURE);

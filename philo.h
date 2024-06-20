@@ -19,6 +19,10 @@
 
 // The shared conditions that they are dining at,
 // i.e. the table rule.
+// Some of these values are constant; others are incremented and therefore need to be locked:
+// - sated
+// - living
+// ? - do I need to have 2 locks (essentially read and write?)
 typedef struct s_table
 {
 	u_int64_t	die_time;
@@ -29,13 +33,15 @@ typedef struct s_table
 	int	sated;
 	int	living;
 	pthread_mutex_t	report;
+	pthread_mutex_t	update;
 	struct timeval	started;
 }	t_table;
 
 // Platonic ideal of philospher
 // Each thread can keep track of their state and needs here.
 // Links to the unchanging data, I guess so we set it up.
-// TODO Add stuff back to this - the locks they have? "left and right hand?"
+// TODO Do I need a mutex for update to this? I think the data in here is *not* shared, so no
+// It is only accessed by the one thread.
 typedef struct s_plato
 {
 	t_table	*data;
