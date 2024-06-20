@@ -30,7 +30,7 @@ struct timeval	ms_to_timeval(u_int64_t t)
 
 // handle the parameters, must only be positive ints
 // Return -1 if the input is invalid.
-int	ph_atoi(char *str)
+int64_t	ph_atoi(char *str)
 {
 	int	n;
 	int	d;

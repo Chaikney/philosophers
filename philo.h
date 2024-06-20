@@ -58,7 +58,7 @@ void	setup_philos(t_plato *phil,  t_table *rules);
 void	get_general_data(t_table *dat, int argc, char **argv);
 
 // helper functions
-int	ph_atoi(char *str);
+int64_t	ph_atoi(char *str);
 u_int64_t	timeval_to_ms(struct timeval t);
 struct timeval	ms_to_timeval(u_int64_t t);
 u_int64_t ms_after(struct timeval t1, struct timeval t2);

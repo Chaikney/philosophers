@@ -5,12 +5,23 @@
 // NOTE Fix was to allocate sizeof(t_table) before arriving here
 // This fills the parameters into t_table struct
 // TODO Error checking - clean up routine needed.
+// DONE Restore error checking, allowing for -1 (invalid) from ph_atoi
 // NOTE If die_time is less than (eat_time + nap_time) the simulation is impossible
+// FIXED Also handle values of 0 - all ilegitimate?
 void	get_general_data(t_table *dat, int argc, char **argv)
 {
+	int64_t	tmp;
+	int		i;
 
 	if ((argc == 5) || (argc == 6))
 	{
+		i = 1;
+		while (i <= (argc - 1))
+		{
+			tmp = ph_atoi(argv[i++]);
+			if (tmp <= 0)
+				exit(EXIT_FAILURE);
+		}
 		dat->table_size = ph_atoi(argv[1]);
 		dat->die_time = (ph_atoi(argv[2]));
 		dat->eat_time = (ph_atoi(argv[3]));
@@ -24,15 +35,11 @@ void	get_general_data(t_table *dat, int argc, char **argv)
 	}
 	else
 		exit(EXIT_FAILURE);
-	/* if ((dat->table_size < 0) || (dat->die_time < 0) || (dat->eat_time < 0) || (dat->nap_time < 0)) */
-	/* 	exit(EXIT_FAILURE); */
 }
 
-//. Allocate mempory for the philosopher things.
-//Really hard not to call this "set table" I should get a prize
+// Set initial values for the philosopher things.
+// Really hard not to call this "set table" I should get a prize
 // allocate what is needed for one philo struct
-// TODO What do I do with a place to put thread ID?(Nothing seesm to be OK so far)
-// FIXED The lowest seat ID is supposed to be 1 not 0 (per assignment)
 void	setup_philos(t_plato *phil,  t_table *rules)
 {
 	int	i;

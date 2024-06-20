@@ -63,7 +63,6 @@ void	log_action(t_plato p, t_logmsg msg)
 // Remember that each of these threads is independent but trying to access shared things,.
 // Maybe first imagine the philosoper as individualists
 // TODO Do I have to run lock a philosopher's record as well (what does that mean?)
-// DONE Getting too long; break up the function stages (get forks, eat, sleep)
 // TODO Need to check to see if ANY philo has died - implies storing in data
 // TODO Give this a better name than launch_phil
 // FIXME Wild. Someone dies at 30 ms no matter what the parameters.
@@ -82,12 +81,13 @@ void	launch_phil(void *ptr)
 		replace_forks_and_nap(p);
 		report_state(p, HMM);
 		gettimeofday(&now, NULL);
+		// FIXME Something is wrong with the death condition.
 		if (ms_after(now, p.starve_at) > 0)	// HACK This is not readable or logical
 		{
 			// NOTE A return from this function is equivalent to ending the thread
 			// (Can't use pthread_exit)
 			report_state(p, DIE);
-			break ;
+			return ;
 //			exit(EXIT_SUCCESS);	// TODO End simulation routine needed
 		}
 	}
