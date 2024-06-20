@@ -6,31 +6,24 @@
 // ...what then to do with catching death conidtiions within 10ms?
 // TODO Avoid deadlock by dropping left fork if can't get right one?
 // But if you can't get the lock what happens? Wait at this point, or fail?
+// NOTE The locks taken here are released in replace_forks_and_nap
 void	take_forks(t_plato p)
 {
-	t_logmsg	*msg;
-
 	pthread_mutex_lock(p.l_fork);
-	msg = make_msg(HAS, p.seat);
-	log_action(p, msg);
-//	report_state(p, HAS);
+	log_action(p, make_msg(HAS, p.seat));
 	pthread_mutex_lock(p.r_fork);
-	msg = make_msg(HAS, p.seat);
-	log_action(p, msg);
-//	report_state(p, HAS);
+	log_action(p, make_msg(HAS, p.seat));
 }
 
 // Report eating, update starvation time, increment meal count
 // sleep for eat_time before returning
 // Clearly this can't be safely called without p holding locks
+// TODO Should this take a pointer to p, as we alter the starve_at time.
 void	eat_food(t_plato p)
 {
 	struct timeval	now;
-	t_logmsg	*msg;
 
-	msg = make_msg(EAT, p.seat);
-	log_action(p, msg);
-//	report_state(p, EAT);
+	log_action(p, make_msg(EAT, p.seat));
 	gettimeofday(&now, NULL);
 	p.starve_at = add_ms(now, p.data->die_time);
 	p.eaten++;	// TODO Do these records need to be locked while updating?
@@ -46,12 +39,8 @@ void	eat_food(t_plato p)
 // Release the forks held and have a nap
 void	replace_forks_and_nap(t_plato p)
 {
-	t_logmsg	*msg;
-
 	pthread_mutex_unlock(p.l_fork);
 	pthread_mutex_unlock(p.r_fork);
-	msg = make_msg(NAP, p.seat);
-	log_action(p, msg);
-//	report_state(p, NAP);
+	log_action(p, make_msg(NAP, p.seat));
 	usleep(p.data->nap_time * 1000);
 }
