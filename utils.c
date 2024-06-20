@@ -55,7 +55,8 @@ int	ph_atoi(char *str)
 
 // Return the number of millseconds between two timevals
 // Return is positive if t1 is later than t2
-u_int64_t	ms_diff(struct timeval t1, struct timeval t2)
+// FIXME If u_int 64 is unsigned, then this will be a problem!
+u_int64_t	ms_after(struct timeval t1, struct timeval t2)
 {
 	u_int64_t	ms;
 	u_int64_t	tmp;

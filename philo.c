@@ -4,10 +4,11 @@
 
 // Log state changes of a philosopher.
 // FIXME The way time works here we could report out of order and late without knowing.
+// TODO Move to a struct for reporting: philosopher, state, timestamp (compare to report time)
 void	report_state(t_plato phil, int state)
 {
 	struct timeval	now;
-	int			milli;
+	u_int64_t		milli;
 	int	seat;
 
 	pthread_mutex_lock(&phil.data->report);
@@ -15,8 +16,8 @@ void	report_state(t_plato phil, int state)
 	if ((state > 0) && (state < 6))
 	{
 		gettimeofday(&now, NULL);
-		milli = ms_diff(now, phil.data->started);
-		printf("%i %i ", milli, seat);
+		milli = ms_after(now, phil.data->started);
+		printf("%lu %i ", milli, seat);
 		if (state == HAS)
 			printf("has taken a fork\n");
 		if (state == EAT)
@@ -72,8 +73,9 @@ void	replace_forks_and_nap(t_plato p)
 // Maybe first imagine the philosoper as individualists
 // TODO Do I have to run lock a philosopher's record as well (what does that mean?)
 // DONE Getting too long; break up the function stages (get forks, eat, sleep)
-// TODO Need to check to see if a philo has died
+// TODO Need to check to see if ANY philo has died - implies storing in data
 // TODO Give this a better name than launch_phil
+// FIXME Wild. Someone dies at 30 ms no matter what the parameters.
 void	launch_phil(void *ptr)
 {
 	t_plato	p;
@@ -89,10 +91,13 @@ void	launch_phil(void *ptr)
 		replace_forks_and_nap(p);
 		report_state(p, HMM);
 		gettimeofday(&now, NULL);
-		if (ms_diff(now, p.starve_at) > 0)	// HACK This is not readable or logical
+		if (ms_after(now, p.starve_at) > 0)	// HACK This is not readable or logical
 		{
+			// NOTE A return from this function is equivalent to ending the thread
+			// (Can't use pthread_exit)
 			report_state(p, DIE);
-			exit(EXIT_SUCCESS);	// TODO End simulation routine needed
+			break ;
+//			exit(EXIT_SUCCESS);	// TODO End simulation routine needed
 		}
 	}
 }
@@ -104,6 +109,7 @@ void	launch_phil(void *ptr)
 // Launch a thread for each philosopher
 // TODO Try compilation without thread sanitize option
 // TODO Function too long, some set up to move elsewhere.
+// FIXME Is reporting off by a factor of 10?
 int	main(int argc, char **argv)
 {
 	t_plato		*philo;

@@ -24,8 +24,8 @@ void	get_general_data(t_table *dat, int argc, char **argv)
 	}
 	else
 		exit(EXIT_FAILURE);
-	if ((dat->table_size < 0) || (dat->die_time < 0) || (dat->eat_time < 0) || (dat->nap_time < 0))
-		exit(EXIT_FAILURE);
+	/* if ((dat->table_size < 0) || (dat->die_time < 0) || (dat->eat_time < 0) || (dat->nap_time < 0)) */
+	/* 	exit(EXIT_FAILURE); */
 }
 
 //. Allocate mempory for the philosopher things.

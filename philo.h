@@ -54,12 +54,17 @@ void	get_general_data(t_table *dat, int argc, char **argv);
 int	ph_atoi(char *str);
 u_int64_t	timeval_to_ms(struct timeval t);
 struct timeval	ms_to_timeval(u_int64_t t);
-u_int64_t ms_diff(struct timeval t1, struct timeval t2);
+u_int64_t ms_after(struct timeval t1, struct timeval t2);
 struct timeval	add_ms(struct timeval t1, u_int64_t ms);
 int	is_later(struct timeval now, struct timeval deadline);
 
 // logging
 void	report_state(t_plato phil, int state);
+
+// actions
+void	take_forks(t_plato p);
+void	eat_food(t_plato p);
+void	replace_forks_and_nap(t_plato p);
 
 // debugging functions that can be removed (or dectivated) later
 void	print_placecard(t_plato p);
