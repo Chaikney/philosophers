@@ -64,7 +64,7 @@ typedef struct	s_logmsg
 
 // setup.c - read parameters, initialise variables, etc.
 void	forks_laid(pthread_mutex_t *forks, t_plato *p);
-void	setup_philos(t_plato *phil,  t_table *rules);
+t_plato *setup_philos(t_table *rules);
 t_table	*get_general_data(int argc, char **argv);
 
 // helper functions

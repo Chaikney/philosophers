@@ -46,12 +46,14 @@ t_table	*get_general_data(int argc, char **argv)
 
 // Set initial values for the philosopher things.
 // Really hard not to call this "set table" I should get a prize
-// allocate what is needed for one philo struct
-void	setup_philos(t_plato *phil,  t_table *rules)
+// allocate what is needed for arrary of philo structs
+t_plato	*setup_philos(t_table *rules)
 {
-	int	i;
+	int		i;
+	t_plato	*phil;
 
 	i = 0;
+	phil = malloc(sizeof(t_plato) * rules->table_size);
 	while (i < (rules->table_size - 1))
 	{
 		phil[i].data = rules;
@@ -62,6 +64,7 @@ void	setup_philos(t_plato *phil,  t_table *rules)
 		phil[i].is_sated = 0;
 		i++;
 	}
+	return (phil);
 }
 
 // Init and allocate an array of mutexes. Link them to each philosophers' L and R hands
