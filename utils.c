@@ -57,8 +57,6 @@ int64_t	ph_atoi(char *str)
 // Return is positive if t1 is later than t2
 // FIXED If u_int 64 is unsigned, then this will be a problem!
 // NOTE Added the return 0 to cover that case
-// FIXED I think the useconds part is wrong - OK for either to be bigger so unsigned is bad choice
-// What if I convert *everything* into ms before the calcs??
 u_int64_t	ms_after(struct timeval t1, struct timeval t2)
 {
 	u_int64_t	ms1;
