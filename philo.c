@@ -142,6 +142,23 @@ void	dining_loop(void *ptr)
 	}
 }
 
+// Destroy muitexes, free memory, etc to ensure that we finish the sim cleanly
+void	clear_table(pthread_mutex_t *forks, t_plato *philos, t_table *rules)
+{
+	int	n;
+	int	i;
+
+	n = rules->table_size;
+	i = 0;
+	while (i < n)
+		pthread_mutex_destroy(&forks[i]);
+	pthread_mutex_destroy(&rules->report);
+	pthread_mutex_destroy(&rules->update);
+	free(forks);
+	free(rules);
+	free(philos);
+}
+
 // Get parameters stored
 // Create an array of mutexes to represent forks
 // Set up philosoper characteristics
@@ -176,10 +193,7 @@ int	main(int argc, char **argv)
 	i = 0;
 	while (i++ < (house_rules->table_size - 1))
 		pthread_join(philo[i].id, NULL);
-//	usleep(10000000);
-	free(forks);
-	free(house_rules);
-	free(philo);
+	clear_table(forks, philo, house_rules);
 	printf("änd now i finish");
 	return (0);
 }
