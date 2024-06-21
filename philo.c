@@ -145,8 +145,7 @@ int	main(int argc, char **argv)
 	int				i;
 
 	i = 0;
-	house_rules = malloc(sizeof(t_table));
-	get_general_data(house_rules, argc, argv);
+	house_rules = get_general_data(argc, argv);
 	print_menu(*house_rules);	// HACK for debugging, remove later
 	philo = NULL;
 	philo = malloc(sizeof(t_plato) * house_rules->table_size);

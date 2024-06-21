@@ -9,11 +9,13 @@
 // NOTE If die_time is less than (eat_time + nap_time) the simulation is impossible
 // FIXED Also handle values of 0 - all ilegitimate?
 // FIXME A table size of 1 leads to segfualts elsewhere.
-void	get_general_data(t_table *dat, int argc, char **argv)
+t_table	*get_general_data(int argc, char **argv)
 {
 	int64_t	tmp;
+	t_table	*dat;
 	int		i;
 
+	dat = malloc(sizeof(t_table));
 	if ((argc == 5) || (argc == 6))
 	{
 		i = 1;
@@ -39,6 +41,7 @@ void	get_general_data(t_table *dat, int argc, char **argv)
 	}
 	else
 		exit(EXIT_FAILURE);
+	return (dat);
 }
 
 // Set initial values for the philosopher things.
@@ -73,7 +76,7 @@ void	forks_laid(pthread_mutex_t *forks, t_plato *p)
 	int	n;
 
 	i = 0;
-	n = p->data->table_size;
+	n = p->data->table_size;	// FIXME Invalid read here causes sf (1 phil) or inf loop (2)
 	while (i < n)
 	{
 		pthread_mutex_init(&forks[i], NULL);
