@@ -132,7 +132,9 @@ void	dining_loop(void *ptr)
 	p = (*((t_plato *) ptr));	// NOTE all these brackets, Cast to t_plato first, then deref.
 //	print_placecard(p);	// HACK for debugging
 //	NOTE The thread ends when either the philosopher dies or everyone has eaten their fill
-	while ((p.is_dead == 0) && (all_done(p) == 0) && call_ambulance(p) == 0)
+//	FIXME This does not work in the case of someone dying. Deadlocks remain somewhere
+//	FIXME If all philos have eaten their fill, things continue.
+	while ((p.is_dead == 0) && (all_done(p) == 0) && (call_ambulance(p) == 0))
 	{
 		take_forks(p);
 		eat_food(&p);
@@ -140,6 +142,7 @@ void	dining_loop(void *ptr)
 		log_action(p, make_msg(HMM, p.seat));
 		take_pulse(&p);
 	}
+	printf("philo %i has finished", p.seat);
 }
 
 // Destroy muitexes, free memory, etc to ensure that we finish the sim cleanly

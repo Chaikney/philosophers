@@ -55,7 +55,7 @@ void	take_pulse(t_plato *p)
 	struct timeval	now;
 
 	gettimeofday(&now, NULL);
-	if (ms_after(now, p->starve_at))
+	if ((p->is_dead == 0) && (ms_after(now, p->starve_at)))
 	{
 		log_action(*p, make_msg(DIE, p->seat));
 		pthread_mutex_lock(&p->data->update);
