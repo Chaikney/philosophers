@@ -3,8 +3,8 @@
 // TODO Add 42 header.
 
 // Log state changes of a philosopher.
-// FIXME The way time works here we could report out of order and late without knowing.
-// TODO Move to a struct for reporting: philosopher, state, timestamp (compare to report time)
+// FIXED The way time works here we could report out of order and late without knowing.
+// DONE Move to a struct for reporting: philosopher, state, timestamp (compare to report time)
 void	report_state(t_plato phil, int state)
 {
 	struct timeval	now;
@@ -111,11 +111,8 @@ int	call_ambulance(t_plato p)
 
 	ans = 0;
 	pthread_mutex_lock(&p.data->report);
-	if (p.data-> appetite != -1)
-	{
-		if (p.data->living < p.data->table_size)
-			ans = 1;
-	}
+	if (p.data->living < p.data->table_size)
+		ans = 1;
 	pthread_mutex_unlock(&p.data->report);
 	return (ans);
 }
@@ -125,7 +122,9 @@ int	call_ambulance(t_plato p)
 // Maybe first imagine the philosoper as individualists
 // TODO Do I have to run lock a philosopher's record as well (what does that mean?)
 // DONE Some of these functions might need to take a pointer?
-// TODO Check for *any* dead philo should end the sim for *all threads*
+// FIXME Check for *any* dead philo should end the sim for *all threads*
+// TODO Add a immediate finish function to the call_ambulance?
+// FIXME Endless loop again.
 void	dining_loop(void *ptr)
 {
 	t_plato	p;
@@ -151,6 +150,7 @@ void	dining_loop(void *ptr)
 // TODO Try compilation without thread sanitize option
 // TODO Function too long, some set up to move elsewhere.
 // FIXME Is reporting off by a factor of 10?
+// TODO Perhaps restructure the setup functions to return values (saves space here)
 int	main(int argc, char **argv)
 {
 	t_plato		*philo;
@@ -161,7 +161,7 @@ int	main(int argc, char **argv)
 	i = 0;
 	house_rules = malloc(sizeof(t_table));
 	get_general_data(house_rules, argc, argv);
-	print_menu(*house_rules);
+	print_menu(*house_rules);	// HACK for debugging, remove later
 	philo = NULL;
 	philo = malloc(sizeof(t_plato) * house_rules->table_size);
 	setup_philos(philo, house_rules);
