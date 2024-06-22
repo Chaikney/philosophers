@@ -3,13 +3,11 @@
 
 // TODO Add 42 header
 
-// NOTE Fix was to allocate sizeof(t_table) before arriving here
 // This fills the parameters into t_table struct
 // TODO Error checking - clean up routine needed.
-// DONE Restore error checking, allowing for -1 (invalid) from ph_atoi
 // NOTE If die_time is less than (eat_time + nap_time) the simulation is impossible
-// FIXED Also handle values of 0 - all ilegitimate?
-// FIXME A table size of 1 leads to segfualts elsewhere.
+// FIXED? A table size of 1 leads to segfualts elsewhere.
+// FIXME Function get_general_data is too long
 t_table	*get_general_data(int argc, char **argv)
 {
 	int64_t	tmp;
@@ -26,7 +24,7 @@ t_table	*get_general_data(int argc, char **argv)
 			if (tmp <= 0)
 				exit(EXIT_FAILURE);
 		}
-		dat->table_size = ph_atoi(argv[1]);	// FIXME Not initialised and causes segfault?
+		dat->table_size = ph_atoi(argv[1]);	// FIXED? Not initialised and causes segfault?
 		dat->die_time = (ph_atoi(argv[2]));
 		dat->eat_time = (ph_atoi(argv[3]));
 		dat->nap_time = (ph_atoi(argv[4]));
@@ -75,6 +73,7 @@ t_plato	*setup_philos(t_table *rules)
 // so let 0 rep their left fork and their seat no (+1), the right
 // NOTE table size is the number of forks and philos. size -1 is the final index position
 // Therefore the final index entry has to loop back to 0 for one fork
+// FIXME One philo = one fork, this does not work!
 pthread_mutex_t	*forks_laid(t_plato *p, int n)
 {
 	int	i;

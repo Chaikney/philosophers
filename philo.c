@@ -49,27 +49,28 @@ t_logmsg	*make_msg(int state, int seat)
 }
 
 // Return 1 if all the philosophers have eaten their fill
-int	all_done(t_plato p)
+int	all_done(t_plato *p)
 {
 	int	ans;
 
 	ans = 0;
-	pthread_mutex_lock(&p.data->report);
-	if (p.data-> appetite != -1)
+	pthread_mutex_lock(&p->data->report);
+	if (p->data-> appetite != -1)
 	{
-		if (p.data->sated == p.data->table_size)
+		if (p->data->sated == p->data->table_size)
 			ans = 1;
-		if (p.data->sated > p.data->table_size)
+		if (p->data->sated > p->data->table_size)
 		{
 			printf("\n******** BAD COUNT ******************\n");
 			exit(EXIT_FAILURE);
 		}
 	}
-	pthread_mutex_unlock(&p.data->report);
+	pthread_mutex_unlock(&p->data->report);
 	return (ans);
 }
 
 // Return 1 if *any* philosopher has died
+// FIXME Too coplicated, replace with an end simulation flag.
 int	call_ambulance(t_plato p)
 {
 	int	ans;
@@ -100,15 +101,18 @@ void	dining_loop(void *ptr)
 //	NOTE The thread ends when either the philosopher dies or everyone has eaten their fill
 //	FIXME This does not work in the case of someone dying. Deadlocks remain somewhere
 //	FIXME If all philos have eaten their fill, things continue.
-	while ((p.is_dead == 0) && (all_done(p) == 0) && (call_ambulance(p) == 0))
+//	One dead philo = stop immediately
+//	Reach the number of meals for all == stop immediately as well.
+//	Currently they continue and only check at the end - problem if stuck waiting for forks
+	while ((p.is_dead == 0) && (all_done(&p) == 0) && (call_ambulance(p) == 0))
 	{
-		take_forks(p);
+		take_forks(&p);
 		eat_food(&p);
 		replace_forks_and_nap(p);
 		log_action(p, make_msg(HMM, p.seat));
 		take_pulse(&p);
 	}
-	printf("philo %i has finished", p.seat);
+//	printf("philo %i has finished", p.seat);
 }
 
 // Destroy muitexes, free memory, etc to ensure that we finish the sim cleanly
@@ -134,8 +138,8 @@ void	clear_table(pthread_mutex_t *forks, t_plato *philos, t_table *rules)
 // link mutexes to philosophers
 // Launch a thread for each philosopher
 // TODO Try compilation without thread sanitize option
-// FIXME Function too long, some set up to move elsewhere.
 // FIXME Is reporting off by a factor of 10?
+// FIXME Main problem now is immediate halt one one philo dies
 // DONE Perhaps restructure the setup functions to return values (saves space here)
 int	main(int argc, char **argv)
 {
@@ -146,17 +150,17 @@ int	main(int argc, char **argv)
 
 	i = 1;
 	house_rules = get_general_data(argc, argv);
-	print_menu(*house_rules);	// HACK for debugging, remove later
+//	print_menu(*house_rules);	// HACK for debugging, remove later
 	philo = setup_philos(house_rules);
 	forks = forks_laid(philo,  house_rules->table_size);
-	while (i < (house_rules->table_size))
+	while (i <= (house_rules->table_size))
 	{
 		pthread_create(&philo[i - 1].id, NULL, (void *) &dining_loop, &philo[i - 1]);
 		i++;
 	}
 	i = 0;
-	while (i++ < (house_rules->table_size))
-		pthread_join(philo[i - 1].id, NULL);
+	while (i++ < (house_rules->table_size) -1)
+		pthread_join(philo[i].id, NULL);
 	clear_table(forks, philo, house_rules);
 	printf("änd now i finish");
 	return (0);

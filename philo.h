@@ -76,7 +76,7 @@ struct timeval	add_ms(struct timeval t1, u_int64_t ms);
 int	is_later(struct timeval now, struct timeval deadline);
 
 // other
-int	all_done(t_plato p);
+int	all_done(t_plato *p);
 
 // logging
 void	report_state(t_plato phil, int state);
@@ -84,7 +84,7 @@ t_logmsg	*make_msg(int state, int seat);
 void	log_action(t_plato p, t_logmsg *msg);
 
 // actions
-void	take_forks(t_plato p);
+void	take_forks(t_plato *p);
 void	eat_food(t_plato *p);
 void	replace_forks_and_nap(t_plato p);
 void	take_pulse(t_plato *p);
