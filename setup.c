@@ -1,4 +1,5 @@
 #include "philo.h"
+#include <bits/pthreadtypes.h>
 
 // TODO Add 42 header
 
@@ -73,13 +74,13 @@ t_plato	*setup_philos(t_table *rules)
 // so let 0 rep their left fork and their seat no (+1), the right
 // NOTE table size is the number of forks and philos. size -1 is the final index position
 // Therefore the final index entry has to loop back to 0 for one fork
-void	forks_laid(pthread_mutex_t *forks, t_plato *p)
+pthread_mutex_t	*forks_laid(t_plato *p, int n)
 {
 	int	i;
-	int	n;
+	pthread_mutex_t	*forks;
 
 	i = 0;
-	n = p->data->table_size;	// FIXME Invalid read here causes sf (1 phil) or inf loop (2)
+	forks = malloc(sizeof(pthread_mutex_t) * n);
 	while (i < n)
 	{
 		pthread_mutex_init(&forks[i], NULL);
@@ -90,4 +91,5 @@ void	forks_laid(pthread_mutex_t *forks, t_plato *p)
 	pthread_mutex_init(&forks[n - 1], NULL);
 	p[n - 1].l_fork = &forks[n - 1];
 	p[n - 1].r_fork = &forks[0];
+	return (forks);
 }

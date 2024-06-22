@@ -136,7 +136,7 @@ void	clear_table(pthread_mutex_t *forks, t_plato *philos, t_table *rules)
 // TODO Try compilation without thread sanitize option
 // FIXME Function too long, some set up to move elsewhere.
 // FIXME Is reporting off by a factor of 10?
-// TODO Perhaps restructure the setup functions to return values (saves space here)
+// DONE Perhaps restructure the setup functions to return values (saves space here)
 int	main(int argc, char **argv)
 {
 	t_plato			*philo;
@@ -148,8 +148,7 @@ int	main(int argc, char **argv)
 	house_rules = get_general_data(argc, argv);
 	print_menu(*house_rules);	// HACK for debugging, remove later
 	philo = setup_philos(house_rules);
-	forks = malloc(sizeof(pthread_mutex_t) * house_rules->table_size);
-	forks_laid(forks, philo);
+	forks = forks_laid(philo,  house_rules->table_size);
 	while (i < (house_rules->table_size) - 1)
 	{
 		pthread_create(&philo[i].id, NULL, (void *) &dining_loop, &philo[i]);
@@ -157,7 +156,7 @@ int	main(int argc, char **argv)
 	}
 	i = 0;
 	while (i++ < (house_rules->table_size - 1))
-		pthread_join(philo[i].id, NULL);
+		pthread_join(philo[i].id, NULL);	// FIXME Uninitialised value here
 	clear_table(forks, philo, house_rules);
 	printf("änd now i finish");
 	return (0);
