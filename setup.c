@@ -55,8 +55,9 @@ t_plato	*setup_philos(t_table *rules)
 
 	i = 0;
 	phil = malloc(sizeof(t_plato) * rules->table_size);
-	while (i < (rules->table_size - 1))
+	while (i < (rules->table_size ))
 	{
+		phil[i].id = 0;
 		phil[i].data = rules;
 		phil[i].seat = i + 1;
 		phil[i].eaten = 0;

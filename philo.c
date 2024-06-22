@@ -144,19 +144,19 @@ int	main(int argc, char **argv)
 	pthread_mutex_t	*forks;
 	int				i;
 
-	i = 0;
+	i = 1;
 	house_rules = get_general_data(argc, argv);
 	print_menu(*house_rules);	// HACK for debugging, remove later
 	philo = setup_philos(house_rules);
 	forks = forks_laid(philo,  house_rules->table_size);
-	while (i < (house_rules->table_size) - 1)
+	while (i < (house_rules->table_size))
 	{
-		pthread_create(&philo[i].id, NULL, (void *) &dining_loop, &philo[i]);
+		pthread_create(&philo[i - 1].id, NULL, (void *) &dining_loop, &philo[i - 1]);
 		i++;
 	}
 	i = 0;
-	while (i++ < (house_rules->table_size - 1))
-		pthread_join(philo[i].id, NULL);	// FIXME Uninitialised value here
+	while (i++ < (house_rules->table_size))
+		pthread_join(philo[i - 1].id, NULL);
 	clear_table(forks, philo, house_rules);
 	printf("änd now i finish");
 	return (0);
