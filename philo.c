@@ -120,7 +120,7 @@ void	clear_table(pthread_mutex_t *forks, t_plato *philos, t_table *rules)
 	n = rules->table_size;
 	i = 0;
 	while (i < n)
-		pthread_mutex_destroy(&forks[i]);
+		pthread_mutex_destroy(&forks[i++]);
 	pthread_mutex_destroy(&rules->report);
 	pthread_mutex_destroy(&rules->update);
 	free(forks);
