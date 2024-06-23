@@ -7,10 +7,7 @@
 // TODO Avoid deadlock by dropping left fork if can't get right one?
 // But if you can't get the lock what happens? Wait at this point, or fail?
 // NOTE The locks taken here are released in replace_forks_and_nap
-// TODO Add checks for the ability to grab a fork and a pause or release when it fails?
-// FIXME Very easily deadlocks. Add some variation in start times
 // NOTE This is more noticable *without* valgrind!
-// FIXME If all philos take one fork, there is no movement or checking even once they must have died!
 void	take_forks(t_plato *p)
 {
 	if ((p->is_dead == 0) && (p->data->stop == 0))

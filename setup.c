@@ -64,7 +64,7 @@ t_plato	*setup_philos(t_table *rules)
 
 	i = 0;
 	phil = malloc(sizeof(t_plato) * rules->table_size);
-	while (i < (rules->table_size ))
+	while (i < (rules->table_size))
 	{
 		phil[i].id = 0;
 		phil[i].data = rules;
@@ -78,16 +78,16 @@ t_plato	*setup_philos(t_table *rules)
 	return (phil);
 }
 
-// Init and allocate an array of mutexes. Link them to each philosophers' L and R hands
+// Init and allocate an array of mutexes.
+// Link them to each philosophers' L and R hands
 // TODO Check that these are linked correctly to the philosophers
-// DONE Special case set up for first and last philosopher's forks
-// so let 0 rep their left fork and their seat no (+1), the right
-// NOTE table size is the number of forks and philos. size -1 is the final index position
+// NOTE table size is the number of forks and philos.
+// size -1 is the final index position
 // Therefore the final index entry has to loop back to 0 for one fork
 // FIXME One philo = one fork, this does not work!
 pthread_mutex_t	*forks_laid(t_plato *p, int n)
 {
-	int	i;
+	int				i;
 	pthread_mutex_t	*forks;
 
 	i = 0;

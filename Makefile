@@ -12,11 +12,10 @@
 
 NAME	= philo
 
-SRC		= philo.c debug.c utils.c setup.c actions.c monitor.c
+SRC		= philo.c utils.c setup.c actions.c monitor.c
 
 OBJ		= $(SRC:.c=.o)
 
-# TODO Understand what -Fthread-sanitize does
 CFLAGS = -Werror -Wall -Wextra -pthread -Fthread-sanitize -ggdb
 CC		= gcc
 
