@@ -55,7 +55,6 @@ int64_t	ph_atoi(char *str)
 
 // Return the number of millseconds between two timevals
 // Return is positive if t1 is later than t2
-// FIXED If u_int 64 is unsigned, then this will be a problem!
 // NOTE Added the return 0 to cover that case
 u_int64_t	ms_after(struct timeval t1, struct timeval t2)
 {
@@ -80,7 +79,6 @@ u_int64_t	ms_after(struct timeval t1, struct timeval t2)
 
 // Add a number of milliseconds to the supplied timeval
 // Return timeval. Works with a -ve value of ms
-// TODO Am i sure this works?
 struct timeval	add_ms(struct timeval t1, u_int64_t ms)
 {
 	struct timeval	t2;

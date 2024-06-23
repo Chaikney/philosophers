@@ -85,12 +85,12 @@ I have given each philosopher a (space to hold a) mutex on each side. To "pick u
 if ((pthread_mutex_lock(p.l_fork) == 0) && (pthread_mutex_lock(p.r_fork) == 0))
 		{
 			report_state(p.seat, EAT);
-			usleep(p.data->eat_time * 1000);	// HACK this is wrong because we arent storing microseconds (yet)
+			usleep(p.data->eat_time * 1000);	// this is wrong because we arent storing microseconds (yet)
 			p.eaten++;	// NOTE Does this record need to be locked while updating?
 			pthread_mutex_unlock(p.l_fork);
 			pthread_mutex_unlock(p.r_fork);
 			report_state(p.seat, NAP);
-			usleep(p.data->nap_time * 1000);	// HACK Wrong, should be in microseconds
+			usleep(p.data->nap_time * 1000);	// Wrong, should be in microseconds
 		}
 		else
 		{

@@ -40,7 +40,8 @@ typedef struct s_table
 // Platonic ideal of philospher
 // Each thread can keep track of their state and needs here.
 // Links to the unchanging data, I guess so we set it up.
-// TODO Do I need a mutex for update to this? I think the data in here is *not* shared, so no
+// NOTE Do I need a mutex for update to this?
+// I think the data in here is *not* shared, so no
 // It is only accessed by the one thread.
 typedef struct s_plato
 {
@@ -79,15 +80,15 @@ struct timeval	add_ms(struct timeval t1, u_int64_t ms);
 int	all_done(t_plato *p);
 
 // logging
-void	report_state(t_plato phil, int state);
 t_logmsg	*make_msg(int state, int seat);
 void	log_action(t_plato p, t_logmsg *msg);
+int	all_done(t_plato *p);
+void	take_pulse(t_plato *p);
 
 // actions
 void	take_forks(t_plato *p);
 void	eat_food(t_plato *p);
 void	replace_forks_and_nap(t_plato p);
-void	take_pulse(t_plato *p);
 
 // debugging functions that can be removed (or dectivated) later
 void	print_placecard(t_plato p);

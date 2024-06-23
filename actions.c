@@ -75,24 +75,3 @@ void	replace_forks_and_nap(t_plato p)
 		usleep(p.data->nap_time * 1000);
 	}
 }
-
-// Check to see if the philosopher has gone beyond starving time.
-// If yes, report message, decrease number of living at table.
-// NOTE We check that they aren't already marked as dead.
-void	take_pulse(t_plato *p)
-{
-	struct timeval	now;
-
-	if (p->data->stop == 0)
-	{
-		gettimeofday(&now, NULL);
-		if ((p->is_dead == 0) && (ms_after(now, p->starve_at)))
-		{
-			log_action(*p, make_msg(DIE, p->seat));
-			pthread_mutex_lock(&p->data->update);
-			p->data->stop = 1;
-			p->is_dead = 1;
-			pthread_mutex_unlock(&p->data->update);
-		}
-	}
-}
