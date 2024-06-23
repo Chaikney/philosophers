@@ -47,9 +47,7 @@ t_logmsg	*make_msg(int state, int seat)
 }
 
 // Return 1 if all the philosophers have eaten their fill
-// FIXED exit is a forbidden function, remove it.
-// TODO Move this to a check done after a philo eats.
-// TODO Have this set t_table->stop
+// NOTE This is called after a philo is sated and from there triggers stop
 int	all_done(t_plato *p)
 {
 	int	ans;
@@ -93,7 +91,7 @@ int	call_ambulance(t_plato p)
 //	One dead philo = stop immediately
 //	Reach the number of meals for all == stop immediately as well.
 //	Currently they continue and only check at the end - problem if stuck waiting for forks
-//	FIXME If all philos have eaten their fill, things continue.
+//	FIXED If all philos have eaten their fill, things continue.
 void	dining_loop(void *ptr)
 {
 	t_plato	p;

@@ -35,7 +35,7 @@ void	take_forks(t_plato *p)
 			pthread_mutex_unlock(p->l_fork);
 	}
 	else
-			pthread_mutex_unlock(p->l_fork);
+		pthread_mutex_unlock(p->l_fork);
 }
 
 // Report eating, update starvation time, increment meal count
@@ -50,12 +50,14 @@ void	eat_food(t_plato *p)
 		log_action(*p, make_msg(EAT, p->seat));
 		gettimeofday(&now, NULL);
 		p->starve_at = add_ms(now, p->data->die_time);
-		p->eaten++;	// TODO Do these records need to be locked while updating?
+		p->eaten++;
 		if ((p->is_sated == 0) && (p->eaten >= p->data->appetite))
 		{
 			pthread_mutex_lock(&p->data->update);
 			p->data->sated++;
 			p->is_sated = 1;
+			if (all_done(p) == 1)
+				p->data->stop = 1;
 			pthread_mutex_unlock(&p->data->update);
 		}
 		usleep(p->data->eat_time * 1000);
@@ -77,7 +79,6 @@ void	replace_forks_and_nap(t_plato p)
 // Check to see if the philosopher has gone beyond starving time.
 // If yes, report message, decrease number of living at table.
 // NOTE We check that they aren't already marked as dead.
-// FIXME Now with 2 calls to this a philo gets reported dead twice. And continues to eat once dead.
 void	take_pulse(t_plato *p)
 {
 	struct timeval	now;
