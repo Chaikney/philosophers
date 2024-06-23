@@ -13,7 +13,7 @@
 // FIXME If all philos take one fork, there is no movement or checking even once they must have died!
 void	take_forks(t_plato *p)
 {
-	if (p->is_dead == 0)
+	if ((p->is_dead == 0) && (p->data->stop == 0))
 	{
 		if (p->is_sated == 1)
 			usleep(p->data->die_time / 10 / 1000);
@@ -28,6 +28,8 @@ void	take_forks(t_plato *p)
 		else
 			pthread_mutex_unlock(p->l_fork);
 	}
+	else
+			pthread_mutex_unlock(p->l_fork);
 }
 
 // Report eating, update starvation time, increment meal count
@@ -37,7 +39,7 @@ void	eat_food(t_plato *p)
 {
 	struct timeval	now;
 
-	if (p->is_dead == 0)
+	if ((p->is_dead == 0) && (p->data->stop == 0))
 	{
 		log_action(*p, make_msg(EAT, p->seat));
 		gettimeofday(&now, NULL);
@@ -59,8 +61,11 @@ void	replace_forks_and_nap(t_plato p)
 {
 	pthread_mutex_unlock(p.l_fork);
 	pthread_mutex_unlock(p.r_fork);
-	log_action(p, make_msg(NAP, p.seat));
-	usleep(p.data->nap_time * 1000);
+	if ((p.is_dead == 0) && (p.data->stop == 0))
+	{
+		log_action(p, make_msg(NAP, p.seat));
+		usleep(p.data->nap_time * 1000);
+	}
 }
 
 // Check to see if the philosopher has gone beyond starving time.
@@ -71,13 +76,16 @@ void	take_pulse(t_plato *p)
 {
 	struct timeval	now;
 
-	gettimeofday(&now, NULL);
-	if ((p->is_dead == 0) && (ms_after(now, p->starve_at)))
+	if (p->data->stop == 0)
 	{
-		log_action(*p, make_msg(DIE, p->seat));
-		pthread_mutex_lock(&p->data->update);
-		p->data->stop = 1;
-		p->is_dead = 1;
-		pthread_mutex_unlock(&p->data->update);
+		gettimeofday(&now, NULL);
+		if ((p->is_dead == 0) && (ms_after(now, p->starve_at)))
+		{
+			log_action(*p, make_msg(DIE, p->seat));
+			pthread_mutex_lock(&p->data->update);
+			p->data->stop = 1;
+			p->is_dead = 1;
+			pthread_mutex_unlock(&p->data->update);
+		}
 	}
 }
