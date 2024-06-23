@@ -17,12 +17,18 @@ void	take_forks(t_plato *p)
 	{
 		if (p->is_sated == 1)
 			usleep(p->data->die_time / 10 / 1000);
-		pthread_mutex_lock(p->l_fork);
+		if (p->seat % 2 == 0)
+			pthread_mutex_lock(p->l_fork);
+		else
+			pthread_mutex_lock(p->r_fork);
 		log_action(*p, make_msg(HAS, p->seat));
 		take_pulse(p);
 		if (p->is_dead == 0)
 		{
-			pthread_mutex_lock(p->r_fork);
+			if (p->seat % 2 == 0)
+				pthread_mutex_lock(p->r_fork);
+			else
+				pthread_mutex_lock(p->l_fork);
 			log_action(*p, make_msg(HAS, p->seat));
 		}
 		else
