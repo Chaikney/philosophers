@@ -31,7 +31,7 @@ typedef struct s_table
 	int	table_size;
 	int	appetite;
 	int	sated;
-	int	living;
+	int	stop;
 	pthread_mutex_t	report;
 	pthread_mutex_t	update;
 	struct timeval	started;

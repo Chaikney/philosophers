@@ -8,6 +8,7 @@
 // NOTE If die_time is less than (eat_time + nap_time) the simulation is impossible
 // FIXED? A table size of 1 leads to segfualts elsewhere.
 // FIXME Function get_general_data is too long
+// FIXME exit is a forbidden function, remove it.
 t_table	*get_general_data(int argc, char **argv)
 {
 	int64_t	tmp;
@@ -24,12 +25,12 @@ t_table	*get_general_data(int argc, char **argv)
 			if (tmp <= 0)
 				exit(EXIT_FAILURE);
 		}
-		dat->table_size = ph_atoi(argv[1]);	// FIXED? Not initialised and causes segfault?
+		dat->table_size = ph_atoi(argv[1]);
 		dat->die_time = (ph_atoi(argv[2]));
 		dat->eat_time = (ph_atoi(argv[3]));
 		dat->nap_time = (ph_atoi(argv[4]));
 		dat->sated = 0;
-		dat->living = dat->table_size;
+		dat->stop = 0;
 		if (argc == 6)
 			dat->appetite = ph_atoi(argv[5]);
 		else

@@ -12,7 +12,7 @@ void	log_action(t_plato p, t_logmsg *msg)
 	u_int64_t		milli;
 
 	pthread_mutex_lock(&p.data->report);
-	if ((msg->state > 0) && (msg->state < 6))
+	if (p.data->stop == 0)
 	{
 		gettimeofday(&now, NULL);
 		milli = ms_after(msg->event_time, p.data->started);
@@ -49,6 +49,9 @@ t_logmsg	*make_msg(int state, int seat)
 }
 
 // Return 1 if all the philosophers have eaten their fill
+// FIXED exit is a forbidden function, remove it.
+// TODO Move this to a check done after a philo eats.
+// TODO Have this set t_table->stop
 int	all_done(t_plato *p)
 {
 	int	ans;
@@ -60,24 +63,21 @@ int	all_done(t_plato *p)
 		if (p->data->sated == p->data->table_size)
 			ans = 1;
 		if (p->data->sated > p->data->table_size)
-		{
 			printf("\n******** BAD COUNT ******************\n");
-			exit(EXIT_FAILURE);
-		}
 	}
 	pthread_mutex_unlock(&p->data->report);
 	return (ans);
 }
 
 // Return 1 if *any* philosopher has died
-// FIXME Too coplicated, replace with an end simulation flag.
+// TODO Too complicated, replace with an end simulation flag.(Replace func entirely?)
 int	call_ambulance(t_plato p)
 {
 	int	ans;
 
 	ans = 0;
 	pthread_mutex_lock(&p.data->report);
-	if (p.data->living < p.data->table_size)
+	if (p.data->stop == 1)
 		ans = 1;
 	pthread_mutex_unlock(&p.data->report);
 	return (ans);
@@ -104,7 +104,7 @@ void	dining_loop(void *ptr)
 //	One dead philo = stop immediately
 //	Reach the number of meals for all == stop immediately as well.
 //	Currently they continue and only check at the end - problem if stuck waiting for forks
-	while ((p.is_dead == 0) && (all_done(&p) == 0) && (call_ambulance(p) == 0))
+	while (p.data->stop == 0)
 	{
 		take_forks(&p);
 		eat_food(&p);

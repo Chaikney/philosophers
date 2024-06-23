@@ -10,7 +10,7 @@
 // TODO Add checks for the ability to grab a fork and a pause or release when it fails?
 // FIXME Very easily deadlocks. Add some variation in start times
 // NOTE This is more noticable *without* valgrind!
-// FIXME If all philos take one fork, there is no moemvent or checking even once they must have died!
+// FIXME If all philos take one fork, there is no movement or checking even once they must have died!
 void	take_forks(t_plato *p)
 {
 	if (p->is_dead == 0)
@@ -76,7 +76,7 @@ void	take_pulse(t_plato *p)
 	{
 		log_action(*p, make_msg(DIE, p->seat));
 		pthread_mutex_lock(&p->data->update);
-		p->data->living--;
+		p->data->stop = 1;
 		p->is_dead = 1;
 		pthread_mutex_unlock(&p->data->update);
 	}
