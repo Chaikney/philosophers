@@ -89,22 +89,3 @@ struct timeval	add_ms(struct timeval t1, u_int64_t ms)
 	t2.tv_usec = t1.tv_usec + ((ms % 1000) * 1000);
 	return (t2);
 }
-
-// Return 1 if the first time is later than deadline
-// -1 if not
-// 0 if equal (to millisecond precision(?))
-// First compare seconds then if equal look at the microseconds
-// TODO May be un-needed and could be removed later.
-int	is_later(struct timeval now, struct timeval deadline)
-{
-	if (now.tv_sec > deadline.tv_sec)
-		return (1);
-	if (now.tv_sec < deadline.tv_sec)
-		return (-1);
-	if ((now.tv_usec / 1000) > (deadline.tv_usec / 1000))
-		return (1);
-	if ((now.tv_usec  / 1000) < (deadline.tv_usec / 1000))
-		return (-1);
-	else
-		return (0);
-}

@@ -65,27 +65,12 @@ int	all_done(t_plato *p)
 	return (ans);
 }
 
-// Return 1 if *any* philosopher has died
-// TODO Too complicated, replace with an end simulation flag.(Replace func entirely?)
-int	call_ambulance(t_plato p)
-{
-	int	ans;
-
-	ans = 0;
-	pthread_mutex_lock(&p.data->report);
-	if (p.data->stop == 1)
-		ans = 1;
-	pthread_mutex_unlock(&p.data->report);
-	return (ans);
-}
-
 // I guess this has to be a loop that breaks when the meal condition is met.
 // Remember that each thread is independent but trying to access shared things.
 // Maybe first imagine the philosoper as individualists
 // TODO Do I have to run lock a philosopher's record as well (what does that mean?)
 // DONE Some of these functions might need to take a pointer?
 // FIXED Check for *any* dead philo should end the sim for *all threads*
-// TODO Add a immediate finish function to the call_ambulance?
 // FIXED Endless loop again. -- caused by deadlock I think.
 // NOTE all these brackets, Cast to t_plato first, then deref.
 //	One dead philo = stop immediately
