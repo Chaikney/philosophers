@@ -66,6 +66,7 @@ typedef struct	s_logmsg
 pthread_mutex_t	*forks_laid(t_plato *p, int n);
 t_plato *setup_philos(t_table *rules);
 t_table	*get_general_data(int argc, char **argv);
+int	check_data(int argc, char **argv);
 
 // helper functions
 int64_t	ph_atoi(char *str);

@@ -1,46 +1,56 @@
 #include "philo.h"
-#include <bits/pthreadtypes.h>
 
 // TODO Add 42 header
 
-// This fills the parameters into t_table struct
-// TODO Error checking - clean up routine needed.
-// NOTE If die_time is less than (eat_time + nap_time) the simulation is impossible
-// FIXED? A table size of 1 leads to segfualts elsewhere.
-// FIXME Function get_general_data is too long
-// FIXME exit is a forbidden function, remove it.
-t_table	*get_general_data(int argc, char **argv)
+// Read parameters and return -1 if the parameteres are invalid.
+// NOTE This includes an impossible situation like:
+// If die_time is less than (eat_time + nap_time)
+// HACK That check is so inefficient!
+int	check_data(int argc, char **argv)
 {
 	int64_t	tmp;
-	t_table	*dat;
 	int		i;
 
-	dat = malloc(sizeof(t_table));
-	if ((argc == 5) || (argc == 6))
+	if ((argc < 5) || (argc > 6))
+		return (-1);
+	i = 1;
+	while (i <= (argc - 1))
 	{
-		i = 1;
-		while (i <= (argc - 1))
-		{
-			tmp = ph_atoi(argv[i++]);
-			if (tmp <= 0)
-				exit(EXIT_FAILURE);
-		}
-		dat->table_size = ph_atoi(argv[1]);
-		dat->die_time = (ph_atoi(argv[2]));
-		dat->eat_time = (ph_atoi(argv[3]));
-		dat->nap_time = (ph_atoi(argv[4]));
-		dat->sated = 0;
-		dat->stop = 0;
-		if (argc == 6)
-			dat->appetite = ph_atoi(argv[5]);
-		else
-			dat->appetite = -1;
-		gettimeofday(&dat->started, NULL);
-		pthread_mutex_init(&dat->report, NULL);
-		pthread_mutex_init(&dat->update, NULL);
+		tmp = ph_atoi(argv[i++]);
+		if (tmp <= 0)
+			return (-1);
 	}
+	if (ph_atoi(argv[2]) < (ph_atoi(argv[3]) + ph_atoi(argv[4])))
+	{
+		printf("\nImpossible conditions");
+		return (-1);
+	}
+	return (0);
+}
+
+// This fills the parameters into t_table struct
+// NOTE The parameters must have passed check_data first
+// FIXED? A table size of 1 leads to segfualts elsewhere.
+// FIXED Function get_general_data is too long
+// FIXED? exit is a forbidden function, remove it.
+t_table	*get_general_data(int argc, char **argv)
+{
+	t_table	*dat;
+
+	dat = malloc(sizeof(t_table));
+	dat->table_size = ph_atoi(argv[1]);
+	dat->die_time = (ph_atoi(argv[2]));
+	dat->eat_time = (ph_atoi(argv[3]));
+	dat->nap_time = (ph_atoi(argv[4]));
+	dat->sated = 0;
+	dat->stop = 0;
+	if (argc == 6)
+		dat->appetite = ph_atoi(argv[5]);
 	else
-		exit(EXIT_FAILURE);
+		dat->appetite = -1;
+	gettimeofday(&dat->started, NULL);
+	pthread_mutex_init(&dat->report, NULL);
+	pthread_mutex_init(&dat->update, NULL);
 	return (dat);
 }
 
