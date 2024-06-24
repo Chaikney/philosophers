@@ -1,8 +1,19 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   monitor.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: chaikney <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/24 09:43:04 by chaikney          #+#    #+#             */
+/*   Updated: 2024/06/24 09:43:09 by chaikney         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
 // Functions for logging and monitoring the philosophers.
 
-// TODO Add 42 header
 // Alternate report_state using a struct of all needed data
 // Lock access to this so that no other thread prints something in the middle
 void	log_action(t_plato p, t_logmsg *msg)

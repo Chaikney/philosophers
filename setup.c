@@ -1,6 +1,16 @@
-#include "philo.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   setup.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: chaikney <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/24 09:44:49 by chaikney          #+#    #+#             */
+/*   Updated: 2024/06/24 09:44:52 by chaikney         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-// TODO Add 42 header
+#include "philo.h"
 
 // Read parameters and return -1 if the parameteres are invalid.
 // NOTE This includes an impossible situation like:

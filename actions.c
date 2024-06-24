@@ -1,6 +1,16 @@
-#include "philo.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   actions.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: chaikney <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/24 09:42:43 by chaikney          #+#    #+#             */
+/*   Updated: 2024/06/24 09:42:48 by chaikney         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-// TODO Add 42 header
+#include "philo.h"
 
 // NOTE It seems very likely that we can be stuck in this function a while.
 // ...what then to do with catching death conidtiions within 10ms?

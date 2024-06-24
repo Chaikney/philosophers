@@ -1,6 +1,16 @@
-#include "philo.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: chaikney <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/24 09:43:45 by chaikney          #+#    #+#             */
+/*   Updated: 2024/06/24 09:43:49 by chaikney         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-// TODO Add 42 header.
+#include "philo.h"
 
 // A loop that breaks when the meal condition is met.
 // Remember that each thread is independent but trying to access shared things.

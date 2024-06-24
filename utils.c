@@ -1,6 +1,16 @@
-#include "philo.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: chaikney <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/06/24 09:44:26 by chaikney          #+#    #+#             */
+/*   Updated: 2024/06/24 09:44:30 by chaikney         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-// TODO Add 42 header
+#include "philo.h"
 
 // A collection of general-purpose functions that do not
 // manipulate external data (and so do not need mutexes?)
