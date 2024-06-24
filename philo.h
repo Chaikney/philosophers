@@ -79,6 +79,14 @@ pthread_mutex_t	*forks_laid(t_plato *p, int n);
 t_plato			*setup_philos(t_table *rules);
 t_table			*get_general_data(int argc, char **argv);
 int				check_data(int argc, char **argv);
+void			clear_table(pthread_mutex_t *forks,
+					t_plato *philos, t_table *rules);
+
+// dining modes and their thread functions
+void			sartre_mode(t_plato *philo);
+void			dining_alone(void *ptr);
+void			olstrom_mode(t_plato *philo);
+void			dining_loop(void *ptr);
 
 // helper functions
 int64_t			ph_atoi(char *str);

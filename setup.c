@@ -94,7 +94,7 @@ t_plato	*setup_philos(t_table *rules)
 // NOTE table size is the number of forks and philos.
 // size -1 is the final index position
 // Therefore the final index entry has to loop back to 0 for one fork
-// FIXME One philo = one fork, this does not work!
+// FIXED One philo = one fork, this does not work!
 pthread_mutex_t	*forks_laid(t_plato *p, int n)
 {
 	int				i;
@@ -102,6 +102,13 @@ pthread_mutex_t	*forks_laid(t_plato *p, int n)
 
 	i = 0;
 	forks = malloc(sizeof(pthread_mutex_t) * n);
+	if (n == 1)
+	{
+		pthread_mutex_init(&forks[i], NULL);
+		p[i].l_fork = &forks[i];
+		p[i].r_fork = &forks[i];
+		return (forks);
+	}
 	while (i < n)
 	{
 		pthread_mutex_init(&forks[i], NULL);
@@ -113,4 +120,21 @@ pthread_mutex_t	*forks_laid(t_plato *p, int n)
 	p[n - 1].l_fork = &forks[n - 1];
 	p[n - 1].r_fork = &forks[0];
 	return (forks);
+}
+
+// Destroy mutexes, free memory, etc to ensure that we finish the sim cleanly
+void	clear_table(pthread_mutex_t *forks, t_plato *philos, t_table *rules)
+{
+	int	n;
+	int	i;
+
+	n = rules->table_size;
+	i = 0;
+	while (i < n)
+		pthread_mutex_destroy(&forks[i++]);
+	pthread_mutex_destroy(&rules->report);
+	pthread_mutex_destroy(&rules->update);
+	free(forks);
+	free(rules);
+	free(philos);
 }
