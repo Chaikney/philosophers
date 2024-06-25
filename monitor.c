@@ -21,9 +21,9 @@ void	log_action(t_plato p, t_logmsg *msg)
 	struct timeval	now;
 	u_int64_t		milli;
 
-	pthread_mutex_lock(&p.data->report);
-	if (p.data->stop == 0)	// FIXME This is implicated in a data race with eat_food and take forks
+	if (getset_stop(&p, 0) == 0)	// FIXME This is implicated in a data race with eat_food and take forks
 	{
+		pthread_mutex_lock(&p.data->update);
 		gettimeofday(&now, NULL);
 		milli = ms_after(msg->event_time, p.data->started);
 		printf("%lu %i ", milli, p.seat);
@@ -37,8 +37,8 @@ void	log_action(t_plato p, t_logmsg *msg)
 			printf("is thinking\n");
 		if (msg->state == DIE)
 			printf("died\n");
+		pthread_mutex_unlock(&p.data->update);
 	}
-	pthread_mutex_unlock(&p.data->report);
 	free(msg);
 }
 
@@ -61,20 +61,24 @@ t_logmsg	*make_msg(int state, int seat)
 // Return 1 if all the philosophers have eaten their fill
 // NOTE This is called after a philo is sated and from there triggers stop
 // TODO This should be a "get / set" type thing, no?
-int	all_done(t_plato *p)
+// flag 1 - update (increase sated value)
+// flag 0 - return the value (what value? done or not done)
+int	all_done(t_plato *p, int flag)
 {
 	int	ans;
 
 	ans = 0;
-	pthread_mutex_lock(&p->data->report);
-	if (p->data-> appetite != -1)
+	pthread_mutex_lock(&p->data->update);
+	if (flag == 0)
 	{
-		if (p->data->sated == p->data->table_size)
+		if ((p->data->sated == p->data->table_size) && (p->data->appetite != -1))
 			ans = 1;
-		if (p->data->sated > p->data->table_size)
-			printf("\n******** BAD COUNT ******************\n");
 	}
-	pthread_mutex_unlock(&p->data->report);
+	else if (flag == 1)
+	{
+		p->data->sated++;
+	}
+	pthread_mutex_unlock(&p->data->update);
 	return (ans);
 }
 
@@ -85,13 +89,13 @@ void	take_pulse(t_plato *p)
 {
 	struct timeval	now;
 
-	if (p->data->stop == 0)	// FIXME Implicated in data race
+	if (getset_stop (p, 0) == 0)	// FIXME Implicated in data race
 	{
 		gettimeofday(&now, NULL);
 		if ((p->is_dead == 0) && (ms_after(now, p->starve_at)))
 		{
 			log_action(*p, make_msg(DIE, p->seat));
-			pthread_mutex_lock(&p->data->update);
+			pthread_mutex_lock(&p->data->update);	// FIXME Should this be a Setter?
 			p->data->stop = 1;
 			p->is_dead = 1;
 			pthread_mutex_unlock(&p->data->update);

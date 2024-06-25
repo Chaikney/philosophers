@@ -59,7 +59,7 @@ int	getset_stop(t_plato *p, int flag)
 		p->data->stop = 1;
 		ret = 1;
 	}
-	else
+	else if (flag == 0)
 		ret = p->data->stop;
 	pthread_mutex_unlock(&p->data->update);
 	return (ret);
@@ -81,13 +81,12 @@ void	eat_food(t_plato *p)
 		p->eaten++;
 		if ((p->is_sated == 0) && (p->eaten >= p->data->appetite))	// TODO Check this for data racing too.
 		{
-			pthread_mutex_lock(&p->data->update);
-			p->data->sated++;
-			p->is_sated = 1;
-			if (all_done(p) == 1)
+			all_done(p, 1);	// NOTE increase the (common) sated count
+//			p->data->sated++;
+			p->is_sated = 1;	// TODO SHould this be part of the getter/setter?
+			if (all_done(p, 0) == 1)
 				getset_stop(p, 1);	// FIXME This re-locks the one above for sated
 //				p->data->stop = 1;	// TODO Change this to getset_stop
-			pthread_mutex_unlock(&p->data->update);
 		}
 		usleep(p->data->eat_time * 1000);
 	}
