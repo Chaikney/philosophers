@@ -60,6 +60,7 @@ t_logmsg	*make_msg(int state, int seat)
 
 // Return 1 if all the philosophers have eaten their fill
 // NOTE This is called after a philo is sated and from there triggers stop
+// TODO This should be a "get / set" type thing, no?
 int	all_done(t_plato *p)
 {
 	int	ans;

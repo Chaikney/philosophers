@@ -68,11 +68,12 @@ int	getset_stop(t_plato *p, int flag)
 // Report eating, update starvation time, increment meal count
 // sleep for eat_time before returning
 // Clearly this can't be safely called without p holding locks
+// TODO Make a get-set thing for the appetite variable
 void	eat_food(t_plato *p)
 {
 	struct timeval	now;
 
-	if ((p->is_dead == 0) && (getset_stop(p, 0) == 0))	// FIXME Implicated in data race with take_pulse
+	if ((p->is_dead == 0) && (getset_stop(p, 0) == 0))	// FIXED Implicated in data race with take_pulse
 	{
 		log_action(*p, make_msg(EAT, p->seat));
 		gettimeofday(&now, NULL);
@@ -84,7 +85,8 @@ void	eat_food(t_plato *p)
 			p->data->sated++;
 			p->is_sated = 1;
 			if (all_done(p) == 1)
-				p->data->stop = 1;	// TODO Change this to getset_stop
+				getset_stop(p, 1);	// FIXME This re-locks the one above for sated
+//				p->data->stop = 1;	// TODO Change this to getset_stop
 			pthread_mutex_unlock(&p->data->update);
 		}
 		usleep(p->data->eat_time * 1000);
@@ -96,7 +98,7 @@ void	replace_forks_and_nap(t_plato p)
 {
 	pthread_mutex_unlock(p.l_fork);
 	pthread_mutex_unlock(p.r_fork);
-	if ((p.is_dead == 0) && (p.data->stop == 0))	// FIXME Implicated in data race
+	if ((p.is_dead == 0) && (getset_stop(&p, 0) == 0))	// FIXED? Implicated in data race
 	{
 		log_action(p, make_msg(NAP, p.seat));
 		usleep(p.data->nap_time * 1000);
