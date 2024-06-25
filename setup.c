@@ -132,7 +132,7 @@ void	clear_table(pthread_mutex_t *forks, t_plato *philos, t_table *rules)
 	i = 0;
 	while (i < n)
 		pthread_mutex_destroy(&forks[i++]);
-	pthread_mutex_destroy(&rules->report);
+	pthread_mutex_destroy(&rules->report);	// FIXME warning of possible data race but here, surely not
 	pthread_mutex_destroy(&rules->update);
 	free(forks);
 	free(rules);

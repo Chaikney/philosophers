@@ -22,7 +22,7 @@ void	log_action(t_plato p, t_logmsg *msg)
 	u_int64_t		milli;
 
 	pthread_mutex_lock(&p.data->report);
-	if (p.data->stop == 0)
+	if (p.data->stop == 0)	// FIXME This is implicated in a data race with eat_food and take forks
 	{
 		gettimeofday(&now, NULL);
 		milli = ms_after(msg->event_time, p.data->started);
@@ -84,7 +84,7 @@ void	take_pulse(t_plato *p)
 {
 	struct timeval	now;
 
-	if (p->data->stop == 0)
+	if (p->data->stop == 0)	// FIXME Implicated in data race
 	{
 		gettimeofday(&now, NULL);
 		if ((p->is_dead == 0) && (ms_after(now, p->starve_at)))
