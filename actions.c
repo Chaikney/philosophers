@@ -95,14 +95,14 @@ void	eat_food(t_plato *p)
 		}
 		usleep(p->data->eat_time * 1000);
 	}
+	pthread_mutex_unlock(p->l_fork);
+	pthread_mutex_unlock(p->r_fork);
 }
 
 // Release any forks held and have a nap
 // FIXME This throws errors due to returning unheld forks Not super-harmful, but...
 void	replace_forks_and_nap(t_plato p)
 {
-	pthread_mutex_unlock(p.l_fork);
-	pthread_mutex_unlock(p.r_fork);
 	if ((p.is_dead == 0) && (getset_stop(&p, 0) == 0))	// FIXED? Implicated in data race
 	{
 		log_action(p, make_msg(NAP, p.seat));
