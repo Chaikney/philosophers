@@ -43,7 +43,6 @@ typedef struct s_table
 	int				appetite;
 	int				sated;
 	int				stop;
-	pthread_mutex_t	report;
 	pthread_mutex_t	update;
 	struct timeval	started;
 }	t_table;

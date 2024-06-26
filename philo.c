@@ -32,7 +32,7 @@ void	dining_loop(void *ptr)
 	t_plato	p;
 
 	p = (*((t_plato *) ptr));
-	while (p.data->stop == 0)
+	while (getset_stop(&p, 0) == 0)
 	{
 		take_forks(&p);
 		eat_food(&p);

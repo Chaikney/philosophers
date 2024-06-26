@@ -63,6 +63,7 @@ t_logmsg	*make_msg(int state, int seat)
 // TODO This should be a "get / set" type thing, no?
 // flag 1 - update (increase sated value)
 // flag 0 - return the value (what value? done or not done)
+// TODO Change the name this is too vague
 int	all_done(t_plato *p, int flag)
 {
 	int	ans;
