@@ -34,6 +34,8 @@ void	dining_loop(void *ptr)
 	p = (*((t_plato *) ptr));
 	while (getset_stop(&p, 0) == 0)
 	{
+		if (p.is_sated == 1)
+			usleep(p.data->die_time / 10 / 1000);
 		take_forks(&p);
 		eat_food(&p);
 		replace_forks_and_nap(p);

@@ -100,7 +100,7 @@ void			log_action(t_plato p, t_logmsg *msg);
 int				all_done(t_plato *p, int flag);
 void			take_pulse(t_plato *p);
 
-int	getset_stop(t_plato *p, int flag);
+int				getset_stop(t_plato *p, int flag);
 // actions
 void			take_forks(t_plato *p);
 void			eat_food(t_plato *p);

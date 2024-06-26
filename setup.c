@@ -123,7 +123,9 @@ pthread_mutex_t	*forks_laid(t_plato *p, int n)
 
 // Destroy mutexes, free memory, etc to ensure that we finish the sim cleanly
 // NOTE The lock on the table is to silence a helgrind warning here
-// The warning was probably spurious as this is only run at the end and values don't matter but still
+// The warning was probably spurious as this is only run at the end
+// and values don't matter but still
+// FIXME forks destroy Sometimes fails with "resource busy" - not all unlocked?
 void	clear_table(pthread_mutex_t *forks, t_plato *philos, t_table *rules)
 {
 	int	n;
@@ -133,7 +135,7 @@ void	clear_table(pthread_mutex_t *forks, t_plato *philos, t_table *rules)
 	n = rules->table_size;
 	i = 0;
 	while (i < n)
-		pthread_mutex_destroy(&forks[i++]);	// FIXME Sometimes fails with "resource busy" - not all forks unlocked?
+		pthread_mutex_destroy(&forks[i++]);
 	pthread_mutex_unlock(&rules->update);
 	pthread_mutex_destroy(&rules->update);
 	free(forks);

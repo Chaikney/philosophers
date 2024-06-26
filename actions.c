@@ -20,12 +20,11 @@
 // Check pulse.
 // If stopped, release the fork
 // Otherwise, take the second fork
+// FIXME Function is too long
 void	take_forks(t_plato *p)
 {
 	if ((p->is_dead == 0) && (getset_stop(p, 0) == 0))
 	{
-		if (p->is_sated == 1)
-			usleep(p->data->die_time / 10 / 1000);
 		if (p->seat % 2 == 0)
 			pthread_mutex_lock(p->l_fork);
 		else
@@ -34,13 +33,12 @@ void	take_forks(t_plato *p)
 	}
 	take_pulse(p);
 	if (getset_stop(p, 0) == 1)
-		{
+	{
 		if (p->seat % 2 == 0)
 			pthread_mutex_unlock(p->l_fork);
 		else
 			pthread_mutex_unlock(p->r_fork);
-		return ;
-		}
+	}
 	else
 	{
 		if (p->seat % 2 == 0)
@@ -75,23 +73,25 @@ int	getset_stop(t_plato *p, int flag)
 // sleep for eat_time before returning
 // Clearly this can't be safely called without p holding locks
 // TODO Make a get-set thing for the appetite variable
+// TODO Check the if eaten >= appetite for data racing too.
+// TODO Should the p->is_sated = 1 be part of the getter/setter?
+// FIXME This re-locks the one above for sated
 void	eat_food(t_plato *p)
 {
 	struct timeval	now;
 
-	if ((p->is_dead == 0) && (getset_stop(p, 0) == 0))	// FIXED Implicated in data race with take_pulse
+	if ((p->is_dead == 0) && (getset_stop(p, 0) == 0))
 	{
 		log_action(*p, make_msg(EAT, p->seat));
 		gettimeofday(&now, NULL);
 		p->starve_at = add_ms(now, p->data->die_time);
 		p->eaten++;
-		if ((p->is_sated == 0) && (p->eaten >= p->data->appetite))	// TODO Check this for data racing too.
+		if ((p->is_sated == 0) && (p->eaten >= p->data->appetite))
 		{
-			all_done(p, 1);	// NOTE increase the (common) sated count
-//			p->data->sated++;
-			p->is_sated = 1;	// TODO Should this be part of the getter/setter?
+			all_done(p, 1);
+			p->is_sated = 1;
 			if (all_done(p, 0) == 1)
-				getset_stop(p, 1);	// FIXME This re-locks the one above for sated
+				getset_stop(p, 1);
 		}
 		usleep(p->data->eat_time * 1000);
 	}
@@ -100,10 +100,11 @@ void	eat_food(t_plato *p)
 }
 
 // Release any forks held and have a nap
-// FIXME This throws errors due to returning unheld forks Not super-harmful, but...
+// FIXME This throws errors due to returning unheld forks
+// Not super-harmful, but...
 void	replace_forks_and_nap(t_plato p)
 {
-	if ((p.is_dead == 0) && (getset_stop(&p, 0) == 0))	// FIXED? Implicated in data race
+	if ((p.is_dead == 0) && (getset_stop(&p, 0) == 0))
 	{
 		log_action(p, make_msg(NAP, p.seat));
 		usleep(p.data->nap_time * 1000);

@@ -16,12 +16,13 @@
 
 // Alternate report_state using a struct of all needed data
 // Lock access to this so that no other thread prints something in the middle
+// FIXME This is implicated in a data race with eat_food and take forks
 void	log_action(t_plato p, t_logmsg *msg)
 {
 	struct timeval	now;
 	u_int64_t		milli;
 
-	if (getset_stop(&p, 0) == 0)	// FIXME This is implicated in a data race with eat_food and take forks
+	if (getset_stop(&p, 0) == 0)
 	{
 		pthread_mutex_lock(&p.data->update);
 		gettimeofday(&now, NULL);
@@ -72,13 +73,12 @@ int	all_done(t_plato *p, int flag)
 	pthread_mutex_lock(&p->data->update);
 	if (flag == 0)
 	{
-		if ((p->data->sated == p->data->table_size) && (p->data->appetite != -1))
+		if ((p->data->sated == p->data->table_size)
+			&& (p->data->appetite != -1))
 			ans = 1;
 	}
 	else if (flag == 1)
-	{
 		p->data->sated++;
-	}
 	pthread_mutex_unlock(&p->data->update);
 	return (ans);
 }
@@ -86,17 +86,19 @@ int	all_done(t_plato *p, int flag)
 // Check to see if the philosopher has gone beyond starving time.
 // If yes, report message, decrease number of living at table.
 // NOTE We check that they aren't already marked as dead.
+// FIXME First if was(?) Implicated in data race
+// FIXME Should the dead bit be a Setter?
 void	take_pulse(t_plato *p)
 {
 	struct timeval	now;
 
-	if (getset_stop (p, 0) == 0)	// FIXME Implicated in data race
+	if (getset_stop (p, 0) == 0)
 	{
 		gettimeofday(&now, NULL);
 		if ((p->is_dead == 0) && (ms_after(now, p->starve_at)))
 		{
 			log_action(*p, make_msg(DIE, p->seat));
-			pthread_mutex_lock(&p->data->update);	// FIXME Should this be a Setter?
+			pthread_mutex_lock(&p->data->update);
 			p->data->stop = 1;
 			p->is_dead = 1;
 			pthread_mutex_unlock(&p->data->update);
