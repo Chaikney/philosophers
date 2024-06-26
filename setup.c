@@ -59,7 +59,6 @@ t_table	*get_general_data(int argc, char **argv)
 	else
 		dat->appetite = -1;
 	gettimeofday(&dat->started, NULL);
-	pthread_mutex_init(&dat->report, NULL);
 	pthread_mutex_init(&dat->update, NULL);
 	return (dat);
 }
@@ -132,7 +131,6 @@ void	clear_table(pthread_mutex_t *forks, t_plato *philos, t_table *rules)
 	i = 0;
 	while (i < n)
 		pthread_mutex_destroy(&forks[i++]);
-	pthread_mutex_destroy(&rules->report);	// FIXME warning of possible data race but here, surely not
 	pthread_mutex_destroy(&rules->update);
 	free(forks);
 	free(rules);
