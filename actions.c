@@ -12,15 +12,17 @@
 
 #include "philo.h"
 
-// NOTE It seems very likely that we can be stuck in this function a while.
-// ...what then to do with catching death conidtiions within 10ms?
-// TODO Avoid deadlock by dropping left fork if can't get right one?
-// But if you can't get the lock what happens? Wait at this point, or fail?
 // NOTE The locks taken here are released in replace_forks_and_nap
-// NOTE This is more noticable *without* valgrind!
+// If sim is still running, take a fork:
+// - wait a little if sated
+// - choose either R or L fork
+// - message
+// Check pulse.
+// If stopped, release the fork
+// Otherwise, take the second fork
 void	take_forks(t_plato *p)
 {
-	if ((p->is_dead == 0) && (p->data->stop == 0))	// FIXME Implicated in data race with take_pulse
+	if ((p->is_dead == 0) && (getset_stop(p, 0) == 0))
 	{
 		if (p->is_sated == 1)
 			usleep(p->data->die_time / 10 / 1000);
@@ -29,20 +31,24 @@ void	take_forks(t_plato *p)
 		else
 			pthread_mutex_lock(p->r_fork);
 		log_action(*p, make_msg(HAS, p->seat));
-		take_pulse(p);
-		if (p->is_dead == 0)
-		{
-			if (p->seat % 2 == 0)
-				pthread_mutex_lock(p->r_fork);
-			else
-				pthread_mutex_lock(p->l_fork);
-			log_action(*p, make_msg(HAS, p->seat));
-		}
-		else
-			pthread_mutex_unlock(p->l_fork);
 	}
+	take_pulse(p);
+	if (getset_stop(p, 0) == 1)
+		{
+		if (p->seat % 2 == 0)
+			pthread_mutex_unlock(p->l_fork);
+		else
+			pthread_mutex_unlock(p->r_fork);
+		return ;
+		}
 	else
-		pthread_mutex_unlock(p->l_fork);
+	{
+		if (p->seat % 2 == 0)
+			pthread_mutex_lock(p->r_fork);
+		else
+			pthread_mutex_lock(p->l_fork);
+		log_action(*p, make_msg(HAS, p->seat));
+	}
 }
 
 // This is what prevents double-acceses to the STOP flag
@@ -83,16 +89,16 @@ void	eat_food(t_plato *p)
 		{
 			all_done(p, 1);	// NOTE increase the (common) sated count
 //			p->data->sated++;
-			p->is_sated = 1;	// TODO SHould this be part of the getter/setter?
+			p->is_sated = 1;	// TODO Should this be part of the getter/setter?
 			if (all_done(p, 0) == 1)
 				getset_stop(p, 1);	// FIXME This re-locks the one above for sated
-//				p->data->stop = 1;	// TODO Change this to getset_stop
 		}
 		usleep(p->data->eat_time * 1000);
 	}
 }
 
-// Release the forks held and have a nap
+// Release any forks held and have a nap
+// FIXME This throws errors due to returning unheld forks Not super-harmful, but...
 void	replace_forks_and_nap(t_plato p)
 {
 	pthread_mutex_unlock(p.l_fork);
