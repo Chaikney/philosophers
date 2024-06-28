@@ -16,7 +16,7 @@
 
 // Alternate report_state using a struct of all needed data
 // Lock access to this so that no other thread prints something in the middle
-// FIXME This is implicated in a data race with eat_food and take forks
+// FIXED This is implicated in a data race with eat_food and take forks
 void	log_action(t_plato p, t_logmsg *msg)
 {
 	struct timeval	now;
@@ -61,10 +61,10 @@ t_logmsg	*make_msg(int state, int seat)
 
 // Return 1 if all the philosophers have eaten their fill
 // NOTE This is called after a philo is sated and from there triggers stop
-// TODO This should be a "get / set" type thing, no?
+// DONE This should be a "get / set" type thing, no?
 // flag 1 - update (increase sated value)
 // flag 0 - return the value (what value? done or not done)
-// TODO Change the name this is too vague
+// IDEA Change the name this is too vague
 int	all_done(t_plato *p, int flag)
 {
 	int	ans;
@@ -86,8 +86,8 @@ int	all_done(t_plato *p, int flag)
 // Check to see if the philosopher has gone beyond starving time.
 // If yes, report message, decrease number of living at table.
 // NOTE We check that they aren't already marked as dead.
-// FIXME First if was(?) Implicated in data race
-// FIXME Should the dead bit be a Setter?
+// FIXED First if was(?) Implicated in data race
+// IDEA Should the dead bit be a Setter?
 void	take_pulse(t_plato *p)
 {
 	struct timeval	now;

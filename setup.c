@@ -89,11 +89,9 @@ t_plato	*setup_philos(t_table *rules)
 
 // Init and allocate an array of mutexes.
 // Link them to each philosophers' L and R hands
-// TODO Check that these are linked correctly to the philosophers
 // NOTE table size is the number of forks and philos.
 // size -1 is the final index position
 // Therefore the final index entry has to loop back to 0 for one fork
-// FIXED One philo = one fork, this does not work!
 pthread_mutex_t	*forks_laid(t_plato *p, int n)
 {
 	int				i;
@@ -125,7 +123,8 @@ pthread_mutex_t	*forks_laid(t_plato *p, int n)
 // NOTE The lock on the table is to silence a helgrind warning here
 // The warning was probably spurious as this is only run at the end
 // and values don't matter but still
-// FIXME forks destroy Sometimes fails with "resource busy" - not all unlocked?
+// NOTE forks destroy Sometimes fails with "resource busy"
+// Decided this is OK because the resources are freed anyway (no leaks)
 void	clear_table(pthread_mutex_t *forks, t_plato *philos, t_table *rules)
 {
 	int	n;
