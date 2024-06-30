@@ -20,7 +20,6 @@
 // Check pulse.
 // If stopped, release the fork
 // Otherwise, take the second fork
-// FIXED Function is too long
 void	take_forks(t_plato *p)
 {
 	if ((p->is_dead == 0) && (getset_stop(p, 0) == 0))
@@ -72,8 +71,6 @@ int	getset_stop(t_plato *p, int flag)
 // Report eating, update starvation time, increment meal count
 // sleep for eat_time before returning
 // Clearly this can't be safely called without p holding locks
-// DONE Make a get-set thing for the appetite variable
-// DONE Check the if eaten >= appetite for data racing too.
 // IDEA Should the p->is_sated = 1 be part of the getter/setter?
 void	eat_food(t_plato *p)
 {
@@ -99,8 +96,6 @@ void	eat_food(t_plato *p)
 }
 
 // Release any forks held and have a nap
-// FIXED (moved) This throws errors due to returning unheld forks
-// Not super-harmful, but...
 void	replace_forks_and_nap(t_plato p)
 {
 	if ((p.is_dead == 0) && (getset_stop(&p, 0) == 0))

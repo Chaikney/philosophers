@@ -40,9 +40,6 @@ int	check_data(int argc, char **argv)
 
 // This fills the parameters into t_table struct
 // NOTE The parameters must have passed check_data first
-// FIXED? A table size of 1 leads to segfualts elsewhere.
-// FIXED Function get_general_data is too long
-// FIXED? exit is a forbidden function, remove it.
 t_table	*get_general_data(int argc, char **argv)
 {
 	t_table	*dat;

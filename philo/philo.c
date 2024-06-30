@@ -79,6 +79,9 @@ void	olstrom_mode(t_plato *philo)
 // Set up philosoper characteristics
 // link mutexes to philosophers
 // Launch a thread for each philosopher
+// FIXME One scenario causes a philosopher die at the wrong time.
+// Example: ./philo 2 100 50 20 - 1 dies after 101 despite havving a fork.
+// (This is not the egregious example, but it was similar and died with fork but very late.)
 int	main(int argc, char **argv)
 {
 	t_plato			*philo;
